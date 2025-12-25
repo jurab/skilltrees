@@ -13,9 +13,12 @@
             font-family: 'courier new', monospace;
         }
         #cy {
-            width: 100vw;
+            width: calc(100vw - 250px);
             height: 100vh;
             display: block;
+        }
+        #cy.sidebar-collapsed {
+            width: 100vw;
         }
         .ui {
             position: absolute;
@@ -29,6 +32,91 @@
         }
         .ui b {
             color: #aaa;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 250px;
+            height: 100vh;
+            background: #0a0a0a;
+            border-left: 1px solid #1a1a1a;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        #sidebar.collapsed {
+            transform: translateX(250px);
+        }
+        #sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            right: 260px;
+            width: 24px;
+            height: 24px;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            z-index: 51;
+            transition: right 0.3s ease;
+        }
+        #sidebar-toggle:hover {
+            border-color: #444;
+            color: #888;
+        }
+        #sidebar.collapsed ~ #sidebar-toggle {
+            right: 10px;
+        }
+        #sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #1a1a1a;
+            color: #666;
+            font-size: 11px;
+        }
+        #sidebar-header b {
+            color: #aaa;
+        }
+        #sidebar-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+        .sidebar-item {
+            padding: 10px 20px;
+            color: #555;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-item:hover {
+            background: #111;
+        }
+        .sidebar-item.done {
+            opacity: 0.6;
+        }
+        .sidebar-item.done .checkmark {
+            display: inline;
+        }
+        .sidebar-item.skipped {
+            opacity: 0.6;
+        }
+        .sidebar-item.next {
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.05);
+        }
+        .sidebar-item .checkmark {
+            display: none;
+            color: #00ff88;
         }
 
         /* Node detail overlay */
@@ -141,12 +229,7 @@
             color: #888;
         }
         .prereq-item.done {
-            border-color: #00ff88;
-            color: #00ff88;
-        }
-        .prereq-item.done:hover {
-            border-color: #00ff88;
-            color: #00ffaa;
+            opacity: 0.4;
         }
         #node-detail-complete {
             background: transparent;
@@ -181,6 +264,14 @@
     </div>
     <div id="cy"></div>
 
+    <div id="sidebar">
+        <div id="sidebar-header">
+            <b>sequence</b>
+        </div>
+        <div id="sidebar-list"></div>
+    </div>
+    <div id="sidebar-toggle">&lsaquo;</div>
+
     <div id="node-detail">
         <div id="node-detail-close">&times;</div>
         <div id="node-detail-title">Skill Title</div>
@@ -209,6 +300,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            var sequence = {{ sequence_json|safe }};
+
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 elements: {{ elements_json|safe }},
@@ -228,7 +321,7 @@
                             'border-width': 1,
                             'border-color': '#222',
                             'shape': 'round-rectangle',
-                            'transition-property': 'background-color, border-color, color',
+                            'transition-property': 'background-color, border-color, color, opacity',
                             'transition-duration': '0.3s'
                         }
                     },
@@ -245,15 +338,22 @@
                     {
                         selector: '.done',
                         style: {
-                            'border-color': '#00ff88',
-                            'color': '#00ff88',
-                            'border-width': 2
+                            'opacity': 0.6,
+                            'label': function(ele) { return '✓ ' + ele.data('name'); }
                         }
                     },
                     {
-                        selector: '.collapsed',
+                        selector: '.skipped',
                         style: {
-                            'opacity': 0.15
+                            'opacity': 0.6
+                        }
+                    },
+                    {
+                        selector: '.next',
+                        style: {
+                            'border-color': '#00ff88',
+                            'color': '#00ff88',
+                            'border-width': 2
                         }
                     }
                 ],
@@ -265,31 +365,90 @@
                 }
             });
 
-            function collapsePrerequisites() {
-                // Collapse all prerequisites of done nodes
-                cy.nodes().forEach(function(node) {
-                    if (node.data('done')) {
-                        var predecessors = node.predecessors();
-                        predecessors.addClass('collapsed');
-                    }
-                });
-                // But keep done nodes visible
-                cy.nodes().forEach(function(node) {
-                    if (node.data('done')) {
-                        node.removeClass('collapsed');
-                    }
-                });
-            }
-
-            // Apply initial done state from server
+            // Apply initial states from server
             cy.nodes().forEach(function(node) {
                 if (node.data('done')) {
                     node.addClass('done');
+                } else if (node.data('next')) {
+                    node.addClass('next');
+                } else if (node.data('skipped')) {
+                    node.addClass('skipped');
                 }
             });
-            
-            // Collapse prerequisites of done nodes on load
-            collapsePrerequisites();
+
+            // Sidebar
+            var sidebar = document.getElementById('sidebar');
+            var sidebarToggle = document.getElementById('sidebar-toggle');
+            var sidebarList = document.getElementById('sidebar-list');
+
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                document.getElementById('cy').classList.toggle('sidebar-collapsed');
+                sidebarToggle.textContent = sidebar.classList.contains('collapsed') ? '\u2039' : '\u203a';
+                cy.resize();
+            });
+
+            function renderSidebar() {
+                sidebarList.innerHTML = '';
+                sequence.forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.className = 'sidebar-item';
+                    if (item.done) div.classList.add('done');
+                    if (item.next) div.classList.add('next');
+                    if (item.skipped) div.classList.add('skipped');
+                    div.dataset.nodeId = item.node_id;
+                    div.dataset.skillId = item.skill_id;
+                    div.innerHTML = '<span class="checkmark">&#10003;</span><span>' + item.name + '</span>';
+                    sidebarList.appendChild(div);
+                });
+            }
+            renderSidebar();
+
+            function updateStates() {
+                // Find all skipped nodes: ancestors of done nodes that are not done themselves
+                var skippedNodeIds = new Set();
+                cy.nodes().forEach(function(node) {
+                    if (node.data('done')) {
+                        // Get all ancestors (predecessors recursively)
+                        var ancestors = node.predecessors('node');
+                        ancestors.forEach(function(ancestor) {
+                            if (!ancestor.data('done')) {
+                                skippedNodeIds.add(ancestor.id());
+                            }
+                        });
+                    }
+                });
+
+                // Find next (first non-done, non-skipped in sequence)
+                var nextIdx = -1;
+                for (var i = 0; i < sequence.length; i++) {
+                    var node = cy.getElementById(sequence[i].node_id);
+                    if (!node.data('done') && !skippedNodeIds.has(sequence[i].node_id)) {
+                        nextIdx = i;
+                        break;
+                    }
+                }
+
+                // Update sequence data and nodes
+                for (var i = 0; i < sequence.length; i++) {
+                    var item = sequence[i];
+                    var node = cy.getElementById(item.node_id);
+                    var isDone = node.data('done');
+                    var isSkipped = skippedNodeIds.has(item.node_id);
+                    var isNext = (i === nextIdx);
+
+                    item.done = isDone;
+                    item.next = isNext;
+                    item.skipped = isSkipped;
+
+                    node.removeClass('done next skipped');
+                    if (isDone) node.addClass('done');
+                    else if (isNext) node.addClass('next');
+                    else if (isSkipped) node.addClass('skipped');
+                }
+
+                renderSidebar();
+            }
 
             var nodeDetail = document.getElementById('node-detail');
             var nodeDetailTitle = document.getElementById('node-detail-title');
@@ -310,8 +469,10 @@
                 }
             }
 
-            function toggleSkillCompletion(skillId, callback) {
-                fetch('/skill/' + skillId + '/toggle/', {
+            function toggleNodeCompletion(nodeId, callback) {
+                // Extract numeric id from 'n123' format
+                var numericId = nodeId.replace('n', '');
+                fetch('/node/' + numericId + '/toggle/', {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': '{{ csrf_token }}',
@@ -327,61 +488,79 @@
                     // Update all nodes with the same skill_id
                     cy.nodes().forEach(function(n) {
                         if (n.data('skill_id') === data.skill_id) {
-                            if (data.done) {
-                                n.addClass('done');
-                            } else {
-                                n.removeClass('done');
-                            }
                             n.data('done', data.done);
                         }
                     });
-                    // Recalculate collapsed state
-                    cy.elements().removeClass('collapsed');
-                    collapsePrerequisites();
+                    updateStates();
                     if (callback) callback(data);
                 })
                 .catch(err => console.error('Error:', err));
+            }
+
+            function showNodeDetail(node) {
+                currentNode = node;
+                nodeDetailTitle.textContent = currentNode.data('name');
+
+                // Get direct predecessors (first-order prerequisites)
+                var predecessors = currentNode.incomers('node');
+                nodeDetailPrereqList.innerHTML = '';
+
+                if (predecessors.length === 0) {
+                    nodeDetailPrereqList.innerHTML = '<span style="color:#444;font-size:11px;">none</span>';
+                } else {
+                    predecessors.forEach(function(prereq) {
+                        var item = document.createElement('div');
+                        item.className = 'prereq-item';
+                        if (prereq.data('done')) {
+                            item.classList.add('done');
+                        }
+                        item.textContent = prereq.data('name');
+                        item.dataset.nodeId = prereq.id();
+                        item.dataset.skillId = prereq.data('skill_id');
+                        nodeDetailPrereqList.appendChild(item);
+                    });
+                }
+
+                updateCompleteButton();
+                nodeDetail.classList.add('active');
             }
 
             // single tap: show node detail (with delay to allow double-tap)
             cy.on('tap', 'node', function(evt) {
                 var tappedNode = evt.target;
                 
-                // Clear any pending tap
                 if (tapTimeout) {
                     clearTimeout(tapTimeout);
                     tapTimeout = null;
-                    return; // This was a double-tap, don't open detail
+                    return;
                 }
                 
                 tapTimeout = setTimeout(function() {
                     tapTimeout = null;
-                    currentNode = tappedNode;
-                    nodeDetailTitle.textContent = currentNode.data('name');
-
-                    // Get direct predecessors (first-order prerequisites)
-                    var predecessors = currentNode.incomers('node');
-                    nodeDetailPrereqList.innerHTML = '';
-
-                    if (predecessors.length === 0) {
-                        nodeDetailPrereqList.innerHTML = '<span style="color:#444;font-size:11px;">none</span>';
-                    } else {
-                        predecessors.forEach(function(prereq) {
-                            var item = document.createElement('div');
-                            item.className = 'prereq-item';
-                            if (prereq.data('done')) {
-                                item.classList.add('done');
-                            }
-                            item.textContent = prereq.data('name');
-                            item.dataset.nodeId = prereq.id();
-                            item.dataset.skillId = prereq.data('skill_id');
-                            nodeDetailPrereqList.appendChild(item);
-                        });
-                    }
-
-                    updateCompleteButton();
-                    nodeDetail.classList.add('active');
+                    showNodeDetail(tappedNode);
                 }, tapDelay);
+            });
+
+            // Sidebar click handling
+            var sidebarTapTimeout = null;
+            sidebarList.addEventListener('click', function(e) {
+                var item = e.target.closest('.sidebar-item');
+                if (!item) return;
+
+                var nodeId = item.dataset.nodeId;
+                var skillId = parseInt(item.dataset.skillId);
+                var node = cy.getElementById(nodeId);
+
+                if (sidebarTapTimeout) {
+                    clearTimeout(sidebarTapTimeout);
+                    sidebarTapTimeout = null;
+                    toggleNodeCompletion(nodeId);
+                } else {
+                    sidebarTapTimeout = setTimeout(function() {
+                        sidebarTapTimeout = null;
+                        showNodeDetail(node);
+                    }, tapDelay);
+                }
             });
 
             // prerequisite click handling (single = navigate, double = toggle)
@@ -391,15 +570,13 @@
                 if (!item) return;
 
                 var nodeId = item.dataset.nodeId;
-                var skillId = item.dataset.skillId;
+                var skillId = parseInt(item.dataset.skillId);
                 var prereqNode = cy.getElementById(nodeId);
 
                 if (prereqTapTimeout) {
-                    // Double click - toggle completion
                     clearTimeout(prereqTapTimeout);
                     prereqTapTimeout = null;
-                    toggleSkillCompletion(skillId, function(data) {
-                        // Update this prereq item
+                    toggleNodeCompletion(nodeId, function(data) {
                         if (data.done) {
                             item.classList.add('done');
                         } else {
@@ -407,32 +584,9 @@
                         }
                     });
                 } else {
-                    // Single click - navigate to prereq detail (after delay)
                     prereqTapTimeout = setTimeout(function() {
                         prereqTapTimeout = null;
-                        currentNode = prereqNode;
-                        nodeDetailTitle.textContent = currentNode.data('name');
-
-                        var predecessors = currentNode.incomers('node');
-                        nodeDetailPrereqList.innerHTML = '';
-
-                        if (predecessors.length === 0) {
-                            nodeDetailPrereqList.innerHTML = '<span style="color:#444;font-size:11px;">none</span>';
-                        } else {
-                            predecessors.forEach(function(prereq) {
-                                var newItem = document.createElement('div');
-                                newItem.className = 'prereq-item';
-                                if (prereq.data('done')) {
-                                    newItem.classList.add('done');
-                                }
-                                newItem.textContent = prereq.data('name');
-                                newItem.dataset.nodeId = prereq.id();
-                                newItem.dataset.skillId = prereq.data('skill_id');
-                                nodeDetailPrereqList.appendChild(newItem);
-                            });
-                        }
-
-                        updateCompleteButton();
+                        showNodeDetail(prereqNode);
                     }, tapDelay);
                 }
             });
@@ -440,10 +594,9 @@
             // complete button click
             nodeDetailComplete.addEventListener('click', function() {
                 if (!currentNode) return;
-                var skillId = currentNode.data('skill_id');
-                toggleSkillCompletion(skillId, function(data) {
+                var nodeId = currentNode.id();
+                toggleNodeCompletion(nodeId, function(data) {
                     updateCompleteButton();
-                    // Update prereq items in the detail view
                     var prereqItems = nodeDetailPrereqList.querySelectorAll('.prereq-item');
                     prereqItems.forEach(function(item) {
                         var prereqNode = cy.nodes().filter(function(n) {
@@ -464,7 +617,6 @@
                 currentNode = null;
             });
 
-            // close on escape
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
                     nodeDetail.classList.remove('active');
@@ -472,7 +624,6 @@
                 }
             });
 
-            // close on click outside content
             nodeDetail.addEventListener('click', function(e) {
                 if (e.target === nodeDetail) {
                     nodeDetail.classList.remove('active');
@@ -483,8 +634,8 @@
             // double tap: toggle skill completion (graph shortcut)
             cy.on('dbltap', 'node', function(evt) {
                 var node = evt.target;
-                var skillId = node.data('skill_id');
-                toggleSkillCompletion(skillId);
+                var nodeId = node.id();
+                toggleNodeCompletion(nodeId);
             });
         });
     </script>
