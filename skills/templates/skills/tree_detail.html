@@ -99,6 +99,13 @@
                 }
             });
 
+            // Apply initial done state from server
+            cy.nodes().forEach(function(node) {
+                if (node.data('done')) {
+                    node.addClass('done');
+                }
+            });
+
             // single tap: toggle predecessors
             cy.on('tap', 'node', function(evt) {
                 var node = evt.target;
@@ -112,10 +119,37 @@
                 }
             });
 
-            // double tap: mark as done
+            // double tap: toggle skill completion
             cy.on('dbltap', 'node', function(evt) {
                 var node = evt.target;
-                node.toggleClass('done');
+                var skillId = node.data('skill_id');
+
+                fetch('/skill/' + skillId + '/toggle/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+                    // Update all nodes with the same skill_id
+                    cy.nodes().forEach(function(n) {
+                        if (n.data('skill_id') === data.skill_id) {
+                            if (data.done) {
+                                n.addClass('done');
+                            } else {
+                                n.removeClass('done');
+                            }
+                            n.data('done', data.done);
+                        }
+                    });
+                })
+                .catch(err => console.error('Error:', err));
             });
         });
     </script>
