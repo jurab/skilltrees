@@ -9,16 +9,16 @@
         body {
             background: #050505;
             margin: 0;
-            overflow: hidden;
+            overflow-x: scroll;
+            overflow-y: hidden;
             font-family: 'courier new', monospace;
         }
         #cy {
-            width: calc(100vw - 250px);
             height: 100vh;
-            display: block;
+            margin-right: 250px;
         }
-        #cy.sidebar-collapsed {
-            width: 100vw;
+        body.sidebar-collapsed #cy {
+            margin-right: 0;
         }
         .ui {
             position: absolute;
@@ -259,8 +259,7 @@
     <div class="ui">
         <b>{{ tree.title }}</b><br>
         TAP: view skill<br>
-        DBL-TAP: mark as DONE<br>
-        SCROLL: zoom
+        DBL-TAP: mark as DONE
     </div>
     <div id="cy"></div>
 
@@ -357,13 +356,57 @@
                         }
                     }
                 ],
-                layout: {
-                    name: 'dagre',
-                    rankDir: 'LR',
-                    nodeSep: 50,
-                    rankSep: 100
-                }
+                layout: { name: 'preset' }, // Don't run layout yet
+                userZoomingEnabled: false,
+                userPanningEnabled: false,
+                boxSelectionEnabled: false,
+                autoungrabify: true
             });
+
+            // Run layout manually so we can attach handler first
+            function fitGraph() {
+                var cyDiv = document.getElementById('cy');
+                var bb = cy.elements().boundingBox();
+                var viewportHeight = window.innerHeight;
+                var viewportWidth = window.innerWidth - 250; // sidebar
+                var padding = 40;
+                
+                // Scale to fit viewport height
+                var scale = (viewportHeight - padding * 2) / bb.h;
+                scale = Math.min(scale, 1);
+                
+                // Calculate width needed for the scaled graph
+                var graphWidth = bb.w * scale + padding * 2;
+                var finalWidth = Math.max(graphWidth, viewportWidth);
+                
+                // Set cy div width to enable horizontal scrolling
+                cyDiv.style.width = finalWidth + 'px';
+                
+                // Resize cytoscape to match new div size
+                cy.resize();
+                
+                // Set zoom and center vertically
+                cy.zoom(scale);
+                cy.pan({
+                    x: padding - bb.x1 * scale,
+                    y: (viewportHeight - bb.h * scale) / 2 - bb.y1 * scale
+                });
+            }
+
+            // Run dagre layout, then fit after DOM is ready
+            var layout = cy.layout({
+                name: 'dagre',
+                rankDir: 'LR',
+                nodeSep: 50,
+                rankSep: 100,
+                fit: false
+            });
+            layout.run();
+            
+            // Wait for layout and DOM to be ready
+            setTimeout(function() {
+                fitGraph();
+            }, 100);
 
             // Apply initial states from server
             cy.nodes().forEach(function(node) {
@@ -383,9 +426,8 @@
 
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('collapsed');
-                document.getElementById('cy').classList.toggle('sidebar-collapsed');
-                sidebarToggle.textContent = sidebar.classList.contains('collapsed') ? '\u2039' : '\u203a';
-                cy.resize();
+                document.body.classList.toggle('sidebar-collapsed');
+                sidebarToggle.textContent = sidebar.classList.contains('collapsed') ? '\u203a' : '\u2039';
             });
 
             function renderSidebar() {
@@ -637,6 +679,13 @@
                 var nodeId = node.id();
                 toggleNodeCompletion(nodeId);
             });
+
+            // Slow down scroll speed
+            document.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                var scrollSpeed = 0.3;
+                window.scrollBy(e.deltaX * scrollSpeed, e.deltaY * scrollSpeed);
+            }, { passive: false });
         });
     </script>
 </body>
