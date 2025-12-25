@@ -30,16 +30,182 @@
         .ui b {
             color: #aaa;
         }
+
+        /* Node detail overlay */
+        #node-detail {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100;
+        }
+        #node-detail.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        #node-detail-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #666;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 101;
+        }
+        #node-detail-close:hover {
+            color: #aaa;
+        }
+        #node-detail-title {
+            color: #aaa;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        #node-detail-video {
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16/9;
+            background: #111;
+            border: 1px solid #222;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #444;
+        }
+        #node-detail-video iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #node-detail-resources {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 12px;
+            padding: 10px 15px;
+            border: 1px solid #222;
+            cursor: pointer;
+        }
+        .resource-item:hover {
+            border-color: #444;
+            color: #888;
+        }
+        .resource-icon {
+            font-size: 16px;
+        }
+        #node-detail-description {
+            max-width: 800px;
+            color: #666;
+            font-size: 13px;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        #node-detail-prerequisites {
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        #node-detail-prerequisites h3 {
+            color: #666;
+            font-size: 12px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+        #node-detail-prereq-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .prereq-item {
+            color: #555;
+            font-size: 11px;
+            padding: 6px 12px;
+            border: 1px solid #222;
+            cursor: pointer;
+        }
+        .prereq-item:hover {
+            border-color: #444;
+            color: #888;
+        }
+        .prereq-item.done {
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+        .prereq-item.done:hover {
+            border-color: #00ff88;
+            color: #00ffaa;
+        }
+        #node-detail-complete {
+            background: transparent;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 12px 30px;
+            font-family: 'courier new', monospace;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        #node-detail-complete:hover {
+            background: #00ff88;
+            color: #050505;
+        }
+        #node-detail-complete.is-done {
+            border-color: #666;
+            color: #666;
+        }
+        #node-detail-complete.is-done:hover {
+            background: #666;
+            color: #050505;
+        }
     </style>
 </head>
 <body>
     <div class="ui">
         <b>{{ tree.title }}</b><br>
-        TAP: toggle prerequisites<br>
+        TAP: view skill<br>
         DBL-TAP: mark as DONE<br>
         SCROLL: zoom
     </div>
     <div id="cy"></div>
+
+    <div id="node-detail">
+        <div id="node-detail-close">&times;</div>
+        <div id="node-detail-title">Skill Title</div>
+        <div id="node-detail-video">
+            <span>video placeholder</span>
+        </div>
+        <div id="node-detail-resources">
+            <div class="resource-item">
+                <span class="resource-icon">&#8595;</span>
+                <span>workflow.json</span>
+            </div>
+            <div class="resource-item">
+                <span class="resource-icon">&#8595;</span>
+                <span>config.json</span>
+            </div>
+        </div>
+        <div id="node-detail-description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </div>
+        <div id="node-detail-prerequisites">
+            <h3>prerequisites</h3>
+            <div id="node-detail-prereq-list"></div>
+        </div>
+        <button id="node-detail-complete">mark as complete</button>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -83,12 +249,6 @@
                             'color': '#00ff88',
                             'border-width': 2
                         }
-                    },
-                    {
-                        selector: '.collapsed',
-                        style: {
-                            'opacity': 0.1
-                        }
                     }
                 ],
                 layout: {
@@ -106,24 +266,26 @@
                 }
             });
 
-            // single tap: toggle predecessors
-            cy.on('tap', 'node', function(evt) {
-                var node = evt.target;
-                var ancestors = node.predecessors();
-                if (node.hasClass('ancestors-hidden')) {
-                    ancestors.removeClass('collapsed');
-                    node.removeClass('ancestors-hidden');
+            var nodeDetail = document.getElementById('node-detail');
+            var nodeDetailTitle = document.getElementById('node-detail-title');
+            var nodeDetailClose = document.getElementById('node-detail-close');
+            var nodeDetailPrereqList = document.getElementById('node-detail-prereq-list');
+            var nodeDetailComplete = document.getElementById('node-detail-complete');
+            var currentNode = null;
+            var tapTimeout = null;
+            var tapDelay = 250;
+
+            function updateCompleteButton() {
+                if (currentNode && currentNode.data('done')) {
+                    nodeDetailComplete.textContent = 'mark as incomplete';
+                    nodeDetailComplete.classList.add('is-done');
                 } else {
-                    ancestors.addClass('collapsed');
-                    node.addClass('ancestors-hidden');
+                    nodeDetailComplete.textContent = 'mark as complete';
+                    nodeDetailComplete.classList.remove('is-done');
                 }
-            });
+            }
 
-            // double tap: toggle skill completion
-            cy.on('dbltap', 'node', function(evt) {
-                var node = evt.target;
-                var skillId = node.data('skill_id');
-
+            function toggleSkillCompletion(skillId, callback) {
                 fetch('/skill/' + skillId + '/toggle/', {
                     method: 'POST',
                     headers: {
@@ -148,8 +310,153 @@
                             n.data('done', data.done);
                         }
                     });
+                    if (callback) callback(data);
                 })
                 .catch(err => console.error('Error:', err));
+            }
+
+            // single tap: show node detail (with delay to allow double-tap)
+            cy.on('tap', 'node', function(evt) {
+                var tappedNode = evt.target;
+                
+                // Clear any pending tap
+                if (tapTimeout) {
+                    clearTimeout(tapTimeout);
+                    tapTimeout = null;
+                    return; // This was a double-tap, don't open detail
+                }
+                
+                tapTimeout = setTimeout(function() {
+                    tapTimeout = null;
+                    currentNode = tappedNode;
+                    nodeDetailTitle.textContent = currentNode.data('name');
+
+                    // Get direct predecessors (first-order prerequisites)
+                    var predecessors = currentNode.incomers('node');
+                    nodeDetailPrereqList.innerHTML = '';
+
+                    if (predecessors.length === 0) {
+                        nodeDetailPrereqList.innerHTML = '<span style="color:#444;font-size:11px;">none</span>';
+                    } else {
+                        predecessors.forEach(function(prereq) {
+                            var item = document.createElement('div');
+                            item.className = 'prereq-item';
+                            if (prereq.data('done')) {
+                                item.classList.add('done');
+                            }
+                            item.textContent = prereq.data('name');
+                            item.dataset.nodeId = prereq.id();
+                            item.dataset.skillId = prereq.data('skill_id');
+                            nodeDetailPrereqList.appendChild(item);
+                        });
+                    }
+
+                    updateCompleteButton();
+                    nodeDetail.classList.add('active');
+                }, tapDelay);
+            });
+
+            // prerequisite click handling (single = navigate, double = toggle)
+            var prereqTapTimeout = null;
+            nodeDetailPrereqList.addEventListener('click', function(e) {
+                var item = e.target.closest('.prereq-item');
+                if (!item) return;
+
+                var nodeId = item.dataset.nodeId;
+                var skillId = item.dataset.skillId;
+                var prereqNode = cy.getElementById(nodeId);
+
+                if (prereqTapTimeout) {
+                    // Double click - toggle completion
+                    clearTimeout(prereqTapTimeout);
+                    prereqTapTimeout = null;
+                    toggleSkillCompletion(skillId, function(data) {
+                        // Update this prereq item
+                        if (data.done) {
+                            item.classList.add('done');
+                        } else {
+                            item.classList.remove('done');
+                        }
+                    });
+                } else {
+                    // Single click - navigate to prereq detail (after delay)
+                    prereqTapTimeout = setTimeout(function() {
+                        prereqTapTimeout = null;
+                        currentNode = prereqNode;
+                        nodeDetailTitle.textContent = currentNode.data('name');
+
+                        var predecessors = currentNode.incomers('node');
+                        nodeDetailPrereqList.innerHTML = '';
+
+                        if (predecessors.length === 0) {
+                            nodeDetailPrereqList.innerHTML = '<span style="color:#444;font-size:11px;">none</span>';
+                        } else {
+                            predecessors.forEach(function(prereq) {
+                                var newItem = document.createElement('div');
+                                newItem.className = 'prereq-item';
+                                if (prereq.data('done')) {
+                                    newItem.classList.add('done');
+                                }
+                                newItem.textContent = prereq.data('name');
+                                newItem.dataset.nodeId = prereq.id();
+                                newItem.dataset.skillId = prereq.data('skill_id');
+                                nodeDetailPrereqList.appendChild(newItem);
+                            });
+                        }
+
+                        updateCompleteButton();
+                    }, tapDelay);
+                }
+            });
+
+            // complete button click
+            nodeDetailComplete.addEventListener('click', function() {
+                if (!currentNode) return;
+                var skillId = currentNode.data('skill_id');
+                toggleSkillCompletion(skillId, function(data) {
+                    updateCompleteButton();
+                    // Update prereq items in the detail view
+                    var prereqItems = nodeDetailPrereqList.querySelectorAll('.prereq-item');
+                    prereqItems.forEach(function(item) {
+                        var prereqNode = cy.nodes().filter(function(n) {
+                            return n.data('name') === item.textContent;
+                        })[0];
+                        if (prereqNode && prereqNode.data('done')) {
+                            item.classList.add('done');
+                        } else {
+                            item.classList.remove('done');
+                        }
+                    });
+                });
+            });
+
+            // close node detail
+            nodeDetailClose.addEventListener('click', function() {
+                nodeDetail.classList.remove('active');
+                currentNode = null;
+            });
+
+            // close on escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    nodeDetail.classList.remove('active');
+                    currentNode = null;
+                }
+            });
+
+            // close on click outside content
+            nodeDetail.addEventListener('click', function(e) {
+                if (e.target === nodeDetail) {
+                    nodeDetail.classList.remove('active');
+                    currentNode = null;
+                }
+            });
+
+            // double tap: toggle skill completion (graph shortcut)
+            cy.on('dbltap', 'node', function(evt) {
+                var node = evt.target;
+                var skillId = node.data('skill_id');
+                toggleSkillCompletion(skillId);
             });
         });
     </script>
