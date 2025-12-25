@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ tree.title }}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
+    <script src="https://cytoscape.org/cytoscape.js-dagre/cytoscape-dagre.js"></script>
+    <style>
+        body {
+            background: #050505;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'courier new', monospace;
+        }
+        #cy {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        .ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #666;
+            font-size: 11px;
+            z-index: 10;
+            line-height: 1.6;
+            pointer-events: none;
+        }
+        .ui b {
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <b>{{ tree.title }}</b><br>
+        TAP: toggle prerequisites<br>
+        DBL-TAP: mark as DONE<br>
+        SCROLL: zoom
+    </div>
+    <div id="cy"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var cy = cytoscape({
+                container: document.getElementById('cy'),
+                elements: {{ elements_json|safe }},
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'background-color': '#050505',
+                            'label': 'data(name)',
+                            'color': '#888',
+                            'font-family': 'monospace',
+                            'font-size': '10px',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'width': '140px',
+                            'height': '35px',
+                            'border-width': 1,
+                            'border-color': '#222',
+                            'shape': 'round-rectangle',
+                            'transition-property': 'background-color, border-color, color',
+                            'transition-duration': '0.3s'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 1,
+                            'line-color': '#1a1a1a',
+                            'target-arrow-color': '#1a1a1a',
+                            'target-arrow-shape': 'triangle',
+                            'curve-style': 'bezier'
+                        }
+                    },
+                    {
+                        selector: '.done',
+                        style: {
+                            'border-color': '#00ff88',
+                            'color': '#00ff88',
+                            'border-width': 2
+                        }
+                    },
+                    {
+                        selector: '.collapsed',
+                        style: {
+                            'opacity': 0.1
+                        }
+                    }
+                ],
+                layout: {
+                    name: 'dagre',
+                    rankDir: 'LR',
+                    nodeSep: 50,
+                    rankSep: 100
+                }
+            });
+
+            // single tap: toggle predecessors
+            cy.on('tap', 'node', function(evt) {
+                var node = evt.target;
+                var ancestors = node.predecessors();
+                if (node.hasClass('ancestors-hidden')) {
+                    ancestors.removeClass('collapsed');
+                    node.removeClass('ancestors-hidden');
+                } else {
+                    ancestors.addClass('collapsed');
+                    node.addClass('ancestors-hidden');
+                }
+            });
+
+            // double tap: mark as done
+            cy.on('dbltap', 'node', function(evt) {
+                var node = evt.target;
+                node.toggleClass('done');
+            });
+        });
+    </script>
+</body>
+</html>
