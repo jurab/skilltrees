@@ -39,8 +39,8 @@
             position: fixed;
             top: 0;
             right: 0;
+            bottom: 15px;
             width: 250px;
-            height: 100vh;
             background: #0a0a0a;
             border-left: 1px solid #1a1a1a;
             z-index: 50;
@@ -269,7 +269,7 @@
         </div>
         <div id="sidebar-list"></div>
     </div>
-    <div id="sidebar-toggle">&lsaquo;</div>
+    <div id="sidebar-toggle">&rsaquo;</div>
 
     <div id="node-detail">
         <div id="node-detail-close">&times;</div>
@@ -427,7 +427,7 @@
             sidebarToggle.addEventListener('click', function() {
                 sidebar.classList.toggle('collapsed');
                 document.body.classList.toggle('sidebar-collapsed');
-                sidebarToggle.textContent = sidebar.classList.contains('collapsed') ? '\u203a' : '\u2039';
+                sidebarToggle.textContent = sidebar.classList.contains('collapsed') ? '\u2039' : '\u203a';
             });
 
             function renderSidebar() {
@@ -680,8 +680,11 @@
                 toggleNodeCompletion(nodeId);
             });
 
-            // Slow down scroll speed
+            // Slow down scroll speed (except in sidebar)
             document.addEventListener('wheel', function(e) {
+                if (e.target.closest('#sidebar')) {
+                    return; // Let sidebar scroll normally
+                }
                 e.preventDefault();
                 var scrollSpeed = 0.3;
                 window.scrollBy(e.deltaX * scrollSpeed, e.deltaY * scrollSpeed);
