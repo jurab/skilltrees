@@ -249,6 +249,12 @@
                             'color': '#00ff88',
                             'border-width': 2
                         }
+                    },
+                    {
+                        selector: '.collapsed',
+                        style: {
+                            'opacity': 0.15
+                        }
                     }
                 ],
                 layout: {
@@ -259,12 +265,31 @@
                 }
             });
 
+            function collapsePrerequisites() {
+                // Collapse all prerequisites of done nodes
+                cy.nodes().forEach(function(node) {
+                    if (node.data('done')) {
+                        var predecessors = node.predecessors();
+                        predecessors.addClass('collapsed');
+                    }
+                });
+                // But keep done nodes visible
+                cy.nodes().forEach(function(node) {
+                    if (node.data('done')) {
+                        node.removeClass('collapsed');
+                    }
+                });
+            }
+
             // Apply initial done state from server
             cy.nodes().forEach(function(node) {
                 if (node.data('done')) {
                     node.addClass('done');
                 }
             });
+            
+            // Collapse prerequisites of done nodes on load
+            collapsePrerequisites();
 
             var nodeDetail = document.getElementById('node-detail');
             var nodeDetailTitle = document.getElementById('node-detail-title');
@@ -310,6 +335,9 @@
                             n.data('done', data.done);
                         }
                     });
+                    // Recalculate collapsed state
+                    cy.elements().removeClass('collapsed');
+                    collapsePrerequisites();
                     if (callback) callback(data);
                 })
                 .catch(err => console.error('Error:', err));
