@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>comamkurvadelat.cz</title>
+    <style>
+        /* Theme: Default (dark hacker) */
+        :root {
+            --bg-base: #050505;
+            --bg-raised: #0a0a0a;
+            --bg-hover: #111;
+            --border-subtle: #1a1a1a;
+            --border-default: #222;
+            --border-hover: #444;
+            --text-muted: #444;
+            --text-dim: #555;
+            --text-secondary: #666;
+            --text-primary: #888;
+            --text-bright: #aaa;
+            --color-action: #00ff88;
+            --color-action-bg: rgba(0, 255, 136, 0.05);
+            --color-danger: #ff4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-base);
+            margin: 0;
+            font-family: 'courier new', monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--bg-base) 0%, transparent 100%);
+        }
+
+        .logo {
+            color: var(--text-bright);
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        /* Settings */
+        #settings-toggle {
+            width: 28px;
+            height: 28px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        #settings-toggle:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+        #settings-panel {
+            display: none;
+            position: fixed;
+            top: 50px;
+            right: 30px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            padding: 15px;
+            z-index: 101;
+            min-width: 150px;
+        }
+        #settings-panel.active {
+            display: block;
+        }
+        #settings-panel h3 {
+            color: var(--text-bright);
+            font-size: 11px;
+            font-weight: normal;
+            margin: 0 0 10px 0;
+        }
+        .theme-option {
+            display: block;
+            padding: 8px 10px;
+            color: var(--text-dim);
+            font-size: 11px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            margin-bottom: 4px;
+        }
+        .theme-option:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .theme-option.active {
+            border-color: var(--color-action);
+            color: var(--color-action);
+        }
+
+        /* Carousel */
+        .carousel {
+            display: flex;
+            height: 100vh;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .slide {
+            flex: 0 0 100vw;
+            width: 100vw;
+            height: 100vh;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 60px 60px;
+            position: relative;
+        }
+
+        .slide-content {
+            max-width: 800px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .slide-title {
+            color: var(--text-bright);
+            font-size: 28px;
+            text-align: center;
+            margin: 0;
+        }
+
+        .slide-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.8;
+            max-width: 500px;
+        }
+
+        /* Preview container */
+        .preview-container {
+            width: 100%;
+            max-width: 700px;
+            aspect-ratio: 16/9;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* CTA button */
+        .cta-button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: transparent;
+            border: 1px solid var(--color-action);
+            color: var(--color-action);
+            font-family: 'courier new', monospace;
+            font-size: 13px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: var(--color-action);
+            color: var(--bg-base);
+        }
+
+        .free-badge {
+            color: var(--color-action);
+            font-size: 11px;
+            margin-top: 10px;
+        }
+
+        /* Navigation arrows */
+        .nav-arrow {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 80px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 50;
+            transition: all 0.2s ease;
+        }
+
+        .nav-arrow:hover {
+            border-color: var(--border-hover);
+            color: var(--text-bright);
+        }
+
+        .nav-arrow.disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .nav-prev {
+            left: 20px;
+        }
+
+        .nav-next {
+            right: 20px;
+        }
+
+        /* Dots indicator */
+        .dots {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 50;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border: 1px solid var(--border-default);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .dot:hover {
+            border-color: var(--border-hover);
+        }
+
+        .dot.active {
+            background: var(--color-action);
+            border-color: var(--color-action);
+        }
+
+        /* Strudel preview */
+        .strudel-preview {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .strudel-code {
+            flex: 1;
+            padding: 20px;
+            font-family: 'courier new', monospace;
+            font-size: 13px;
+            color: var(--color-action);
+            background: var(--bg-base);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .strudel-controls {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .strudel-play {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid var(--color-action);
+            color: var(--color-action);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .strudel-play:hover {
+            background: var(--color-action);
+            color: var(--bg-base);
+        }
+
+        .strudel-play.playing {
+            background: var(--color-action);
+            color: var(--bg-base);
+        }
+
+        .lpf-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .lpf-label {
+            color: var(--text-secondary);
+            font-size: 11px;
+            min-width: 30px;
+        }
+
+        .lpf-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            background: var(--border-default);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .lpf-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--color-action);
+            cursor: pointer;
+        }
+
+        .lpf-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--color-action);
+            cursor: pointer;
+            border: none;
+        }
+
+        .lpf-value {
+            color: var(--text-primary);
+            font-size: 11px;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* LinkedIn scraper animation */
+        .linkedin-preview {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .linkedin-table {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        .linkedin-header {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 120px;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            font-size: 10px;
+        }
+
+        .linkedin-rows {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .linkedin-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 120px;
+            gap: 10px;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-dim);
+            font-size: 11px;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: rowSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes rowSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .linkedin-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .linkedin-row.highlight {
+            background: var(--color-action-bg);
+            color: var(--text-primary);
+        }
+
+        .linkedin-row.highlight .linkedin-avatar {
+            background: var(--color-action);
+            color: var(--bg-base);
+        }
+
+        .linkedin-faces {
+            width: 120px;
+            border-left: 1px solid var(--border-subtle);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .face-card {
+            width: 90px;
+            height: 90px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-default);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: rotateY(90deg);
+            animation: faceFlip 0.4s ease forwards;
+        }
+
+        @keyframes faceFlip {
+            to {
+                opacity: 1;
+                transform: rotateY(0);
+            }
+        }
+
+        .face-icon {
+            font-size: 28px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .face-name {
+            font-size: 9px;
+            color: var(--text-dim);
+        }
+
+        /* Email composition overlay */
+        .email-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            display: none;
+            flex-direction: column;
+        }
+
+        .email-overlay.active {
+            display: flex;
+            animation: emailSlideIn 0.3s ease;
+        }
+
+        @keyframes emailSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .email-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .email-field {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-dim);
+            font-size: 11px;
+        }
+
+        .email-field span {
+            color: var(--text-muted);
+        }
+
+        .email-body {
+            padding: 15px;
+            min-height: 100px;
+            color: var(--text-primary);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .email-body .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 14px;
+            background: var(--color-action);
+            animation: blink 0.8s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .email-send {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--color-action);
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--bg-base);
+        }
+
+        .email-send.active {
+            display: flex;
+            animation: sendSwoosh 0.8s ease forwards;
+        }
+
+        @keyframes sendSwoosh {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(200%, -200%) scale(0.3);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">comamkurvadelat.cz</div>
+        <div id="settings-toggle">&#9881;</div>
+    </header>
+
+    <div id="settings-panel">
+        <h3>theme</h3>
+        <div class="theme-option active" data-theme="default">default</div>
+        <div class="theme-option" data-theme="claude">claude</div>
+        <div class="theme-option" data-theme="ocean">ocean</div>
+        <div class="theme-option" data-theme="amber">amber</div>
+        <div class="theme-option" data-theme="flashbang">flashbang</div>
+    </div>
+
+    <div class="carousel" id="carousel">
+        {% for tree in trees %}
+        <div class="slide" data-index="{{ forloop.counter0 }}" data-tree-id="{{ tree.id }}">
+            <div class="slide-content">
+                <h1 class="slide-title">{{ tree.title }}</h1>
+                <p class="slide-description">{{ tree.description }}</p>
+                
+                <div class="preview-container" data-preview-type="{{ tree.preview_type }}">
+                    {% if tree.preview_type == 'strudel' %}
+                    <div class="strudel-preview">
+                        <div class="strudel-code">
+                            <code>{{ tree.preview_config.pattern }}</code>
+                        </div>
+                        <div class="strudel-controls">
+                            <button class="strudel-play" title="Play/Stop">&#9654;</button>
+                            <div class="lpf-container">
+                                <span class="lpf-label">LPF</span>
+                                <input type="range" class="lpf-slider" min="100" max="5000" value="800">
+                                <span class="lpf-value">800 Hz</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="linkedin-preview">
+                        <div class="linkedin-table">
+                            <div class="linkedin-header">
+                                <div></div>
+                                <div>Name</div>
+                                <div>Company</div>
+                                <div>Title</div>
+                            </div>
+                            <div class="linkedin-rows"></div>
+                        </div>
+                        <div class="linkedin-faces"></div>
+                        <div class="email-overlay">
+                            <div class="email-header">New Message</div>
+                            <div class="email-field"><span>To:</span> <span class="email-to"></span></div>
+                            <div class="email-field"><span>Subject:</span> Quick question about your role</div>
+                            <div class="email-body"><span class="email-text"></span><span class="cursor"></span></div>
+                        </div>
+                        <div class="email-send">&#10148;</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <a href="{% url 'skills:tree_detail' tree.id %}" class="cta-button">
+                    {% if tree.is_free %}start free course{% else %}view course{% endif %}
+                </a>
+                {% if tree.is_free %}
+                <div class="free-badge">100% free</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="nav-arrow nav-prev" id="nav-prev">&#8249;</button>
+    <button class="nav-arrow nav-next" id="nav-next">&#8250;</button>
+
+    <div class="dots" id="dots">
+        {% for tree in trees %}
+        <div class="dot{% if forloop.first %} active{% endif %}" data-index="{{ forloop.counter0 }}"></div>
+        {% endfor %}
+    </div>
+
+    <script src="https://unpkg.com/@strudel/web@1.0.0/dist/index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme definitions
+            var themes = {
+                default: {
+                    '--bg-base': '#050505', '--bg-raised': '#0a0a0a', '--bg-hover': '#111',
+                    '--border-subtle': '#1a1a1a', '--border-default': '#222', '--border-hover': '#444',
+                    '--text-muted': '#444', '--text-dim': '#555', '--text-secondary': '#666',
+                    '--text-primary': '#888', '--text-bright': '#aaa',
+                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444'
+                },
+                claude: {
+                    '--bg-base': '#1a1915', '--bg-raised': '#23211c', '--bg-hover': '#2d2a24',
+                    '--border-subtle': '#3d3930', '--border-default': '#4a453a', '--border-hover': '#6b6355',
+                    '--text-muted': '#6b6355', '--text-dim': '#8b8070', '--text-secondary': '#a69a88',
+                    '--text-primary': '#c4b59d', '--text-bright': '#e8dcc8',
+                    '--color-action': '#da7756', '--color-action-bg': 'rgba(218, 119, 86, 0.08)', '--color-danger': '#e63946'
+                },
+                ocean: {
+                    '--bg-base': '#0a0e14', '--bg-raised': '#0d1219', '--bg-hover': '#141b24',
+                    '--border-subtle': '#1a2433', '--border-default': '#243044', '--border-hover': '#3a4d66',
+                    '--text-muted': '#3a4d66', '--text-dim': '#4a6080', '--text-secondary': '#6b8aad',
+                    '--text-primary': '#8aa8c7', '--text-bright': '#b8d4f0',
+                    '--color-action': '#5ccfe6', '--color-action-bg': 'rgba(92, 207, 230, 0.08)', '--color-danger': '#ff6b6b'
+                },
+                amber: {
+                    '--bg-base': '#0f0d09', '--bg-raised': '#1a1610', '--bg-hover': '#252015',
+                    '--border-subtle': '#2d2618', '--border-default': '#3d3420', '--border-hover': '#5c4d30',
+                    '--text-muted': '#5c4d30', '--text-dim': '#7a6840', '--text-secondary': '#a08850',
+                    '--text-primary': '#c4a860', '--text-bright': '#e8d090',
+                    '--color-action': '#f0a020', '--color-action-bg': 'rgba(240, 160, 32, 0.08)', '--color-danger': '#e05040'
+                },
+                flashbang: {
+                    '--bg-base': '#ffffff', '--bg-raised': '#f5f5f5', '--bg-hover': '#ebebeb',
+                    '--border-subtle': '#e0e0e0', '--border-default': '#d0d0d0', '--border-hover': '#a0a0a0',
+                    '--text-muted': '#c0c0c0', '--text-dim': '#a0a0a0', '--text-secondary': '#707070',
+                    '--text-primary': '#505050', '--text-bright': '#202020',
+                    '--color-action': '#10b981', '--color-action-bg': 'rgba(16, 185, 129, 0.08)', '--color-danger': '#ef4444'
+                }
+            };
+
+            function applyTheme(themeName) {
+                var theme = themes[themeName];
+                if (!theme) return;
+                for (var prop in theme) {
+                    document.documentElement.style.setProperty(prop, theme[prop]);
+                }
+                localStorage.setItem('skilltrees-theme', themeName);
+                
+                // Update active state
+                document.querySelectorAll('.theme-option').forEach(function(opt) {
+                    opt.classList.toggle('active', opt.dataset.theme === themeName);
+                });
+            }
+
+            // Load saved theme
+            var savedTheme = localStorage.getItem('skilltrees-theme') || 'default';
+            applyTheme(savedTheme);
+
+            // Settings panel
+            var settingsToggle = document.getElementById('settings-toggle');
+            var settingsPanel = document.getElementById('settings-panel');
+
+            settingsToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                settingsPanel.classList.toggle('active');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!settingsPanel.contains(e.target)) {
+                    settingsPanel.classList.remove('active');
+                }
+            });
+
+            document.querySelectorAll('.theme-option').forEach(function(opt) {
+                opt.addEventListener('click', function() {
+                    applyTheme(this.dataset.theme);
+                });
+            });
+
+            // Carousel navigation
+            var carousel = document.getElementById('carousel');
+            var slides = document.querySelectorAll('.slide');
+            var dots = document.querySelectorAll('.dot');
+            var prevBtn = document.getElementById('nav-prev');
+            var nextBtn = document.getElementById('nav-next');
+            var currentIndex = 0;
+
+            function goToSlide(index) {
+                if (index < 0 || index >= slides.length) return;
+                currentIndex = index;
+                slides[index].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+                updateNav();
+            }
+
+            function updateNav() {
+                prevBtn.classList.toggle('disabled', currentIndex === 0);
+                nextBtn.classList.toggle('disabled', currentIndex === slides.length - 1);
+                dots.forEach(function(dot, i) {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+
+            prevBtn.addEventListener('click', function() {
+                if (currentIndex > 0) goToSlide(currentIndex - 1);
+            });
+
+            nextBtn.addEventListener('click', function() {
+                if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+            });
+
+            dots.forEach(function(dot) {
+                dot.addEventListener('click', function() {
+                    goToSlide(parseInt(this.dataset.index));
+                });
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    if (currentIndex > 0) goToSlide(currentIndex - 1);
+                } else if (e.key === 'ArrowRight') {
+                    if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+                }
+            });
+
+            // Detect scroll position for dot sync
+            var scrollTimeout;
+            carousel.addEventListener('scroll', function() {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(function() {
+                    var scrollLeft = carousel.scrollLeft;
+                    var slideWidth = window.innerWidth;
+                    var newIndex = Math.round(scrollLeft / slideWidth);
+                    if (newIndex !== currentIndex) {
+                        currentIndex = newIndex;
+                        updateNav();
+                    }
+                }, 50);
+            });
+
+            // LinkedIn scraper animation
+            var linkedinPreviews = document.querySelectorAll('.linkedin-preview');
+            
+            var fakeData = [
+                { name: 'Sarah Chen', company: 'Stripe', title: 'Product Lead' },
+                { name: 'Marcus Weber', company: 'Notion', title: 'Engineering Manager' },
+                { name: 'Elena Volkov', company: 'Figma', title: 'Design Director' },
+                { name: 'James Okafor', company: 'Linear', title: 'Head of Growth' },
+                { name: 'Lisa Nakamura', company: 'Vercel', title: 'Solutions Architect' },
+                { name: 'David Kim', company: 'Supabase', title: 'Developer Advocate' },
+                { name: 'Anna Bergström', company: 'Klarna', title: 'VP Engineering' },
+                { name: 'Tom Richards', company: 'Intercom', title: 'Sales Director' },
+                { name: 'Maya Patel', company: 'Retool', title: 'Product Manager' },
+                { name: 'Chris Mueller', company: 'Datadog', title: 'Site Reliability' }
+            ];
+
+            var emailText = "Hi there!\n\nI noticed your work at {{company}} and would love to connect. I'm building something that might be relevant to your team.\n\nWould you have 15 minutes for a quick chat this week?";
+
+            linkedinPreviews.forEach(function(preview) {
+                var rowsContainer = preview.querySelector('.linkedin-rows');
+                var facesContainer = preview.querySelector('.linkedin-faces');
+                var emailOverlay = preview.querySelector('.email-overlay');
+                var emailTo = preview.querySelector('.email-to');
+                var emailTextEl = preview.querySelector('.email-text');
+                var emailSend = preview.querySelector('.email-send');
+                
+                if (!rowsContainer) return;
+
+                var rowIndex = 0;
+                var faceIndex = 0;
+                var animationPhase = 'scrolling';
+                var highlightedPerson = null;
+
+                function getInitials(name) {
+                    return name.split(' ').map(n => n[0]).join('');
+                }
+
+                function addRow() {
+                    if (rowIndex >= fakeData.length) {
+                        rowIndex = 0;
+                        rowsContainer.innerHTML = '';
+                    }
+                    
+                    var person = fakeData[rowIndex];
+                    var row = document.createElement('div');
+                    row.className = 'linkedin-row';
+                    row.style.animationDelay = '0s';
+                    row.innerHTML = `
+                        <div class="linkedin-avatar">${getInitials(person.name)}</div>
+                        <div>${person.name}</div>
+                        <div>${person.company}</div>
+                        <div>${person.title}</div>
+                    `;
+                    rowsContainer.appendChild(row);
+                    
+                    // Remove old rows
+                    while (rowsContainer.children.length > 6) {
+                        rowsContainer.removeChild(rowsContainer.firstChild);
+                    }
+                    
+                    rowIndex++;
+                }
+
+                function addFace() {
+                    if (faceIndex >= 4) return;
+                    
+                    var person = fakeData[faceIndex % fakeData.length];
+                    var face = document.createElement('div');
+                    face.className = 'face-card';
+                    face.style.animationDelay = '0s';
+                    face.innerHTML = `
+                        <div class="face-icon">${getInitials(person.name)}</div>
+                        <div class="face-name">${person.name.split(' ')[0]}</div>
+                    `;
+                    facesContainer.appendChild(face);
+                    faceIndex++;
+                }
+
+                function highlightRow() {
+                    var rows = rowsContainer.querySelectorAll('.linkedin-row');
+                    if (rows.length > 2) {
+                        var targetRow = rows[Math.floor(rows.length / 2)];
+                        targetRow.classList.add('highlight');
+                        highlightedPerson = fakeData[(rowIndex - Math.ceil(rows.length / 2)) % fakeData.length];
+                    }
+                }
+
+                function showEmail() {
+                    if (!highlightedPerson) highlightedPerson = fakeData[0];
+                    emailTo.textContent = highlightedPerson.name.toLowerCase().replace(' ', '.') + '@' + highlightedPerson.company.toLowerCase() + '.com';
+                    emailOverlay.classList.add('active');
+                    
+                    var text = emailText.replace('{{company}}', highlightedPerson.company);
+                    var charIndex = 0;
+                    
+                    function typeChar() {
+                        if (charIndex < text.length) {
+                            emailTextEl.textContent += text[charIndex];
+                            charIndex++;
+                            setTimeout(typeChar, 30 + Math.random() * 20);
+                        } else {
+                            setTimeout(sendEmail, 800);
+                        }
+                    }
+                    typeChar();
+                }
+
+                function sendEmail() {
+                    emailOverlay.classList.remove('active');
+                    emailSend.classList.add('active');
+                    
+                    setTimeout(function() {
+                        emailSend.classList.remove('active');
+                        resetAnimation();
+                    }, 1000);
+                }
+
+                function resetAnimation() {
+                    rowsContainer.innerHTML = '';
+                    facesContainer.innerHTML = '';
+                    emailTextEl.textContent = '';
+                    rowIndex = 0;
+                    faceIndex = 0;
+                    animationPhase = 'scrolling';
+                    highlightedPerson = null;
+                    startAnimation();
+                }
+
+                function startAnimation() {
+                    // Phase 1: Scroll rows (3 seconds)
+                    var rowInterval = setInterval(function() {
+                        addRow();
+                    }, 400);
+
+                    // Phase 2: Add faces (starting at 1.5s)
+                    setTimeout(function() {
+                        var faceInterval = setInterval(function() {
+                            addFace();
+                            if (faceIndex >= 4) clearInterval(faceInterval);
+                        }, 300);
+                    }, 1500);
+
+                    // Phase 3: Highlight a row (at 3s)
+                    setTimeout(function() {
+                        clearInterval(rowInterval);
+                        highlightRow();
+                        animationPhase = 'highlight';
+                    }, 3000);
+
+                    // Phase 4: Show email (at 4s)
+                    setTimeout(function() {
+                        showEmail();
+                        animationPhase = 'email';
+                    }, 4000);
+                }
+
+                // Start animation
+                startAnimation();
+            });
+
+            // Strudel audio integration
+            var strudelPreviews = document.querySelectorAll('.strudel-preview');
+            
+            strudelPreviews.forEach(function(preview) {
+                var playBtn = preview.querySelector('.strudel-play');
+                var lpfSlider = preview.querySelector('.lpf-slider');
+                var lpfValue = preview.querySelector('.lpf-value');
+                var codeEl = preview.querySelector('code');
+                var pattern = codeEl ? codeEl.textContent : '';
+                var isPlaying = false;
+                var repl = null;
+
+                lpfSlider.addEventListener('input', function() {
+                    lpfValue.textContent = this.value + ' Hz';
+                    // Update pattern with new LPF value if playing
+                    if (repl && isPlaying) {
+                        try {
+                            var newPattern = pattern.replace(/\.lpf\(\d+\)/, '.lpf(' + this.value + ')');
+                            repl.evaluate(newPattern);
+                        } catch(e) {
+                            console.log('LPF update error:', e);
+                        }
+                    }
+                });
+
+                playBtn.addEventListener('click', async function() {
+                    if (!window.strudel) {
+                        console.log('Strudel not loaded yet');
+                        return;
+                    }
+
+                    if (!isPlaying) {
+                        try {
+                            if (!repl) {
+                                repl = await window.strudel.repl({
+                                    defaultOutput: window.strudel.webaudio
+                                });
+                            }
+                            var currentPattern = pattern.replace(/\.lpf\(\d+\)/, '.lpf(' + lpfSlider.value + ')');
+                            await repl.evaluate(currentPattern);
+                            isPlaying = true;
+                            playBtn.innerHTML = '&#9632;';
+                            playBtn.classList.add('playing');
+                        } catch(e) {
+                            console.log('Strudel error:', e);
+                        }
+                    } else {
+                        if (repl) {
+                            repl.stop();
+                        }
+                        isPlaying = false;
+                        playBtn.innerHTML = '&#9654;';
+                        playBtn.classList.remove('playing');
+                    }
+                });
+            });
+
+            updateNav();
+        });
+    </script>
+</body>
+</html>

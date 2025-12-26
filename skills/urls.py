@@ -5,6 +5,7 @@ from . import views
 app_name = 'skills'
 
 urlpatterns = [
+    path('', views.homepage, name='homepage'),
     path('tree/<int:pk>/', views.tree_detail, name='tree_detail'),
     path('node/<int:node_id>/toggle/', views.toggle_skill, name='toggle_skill'),
     path('node/<int:node_id>/ignore/', views.toggle_ignore, name='toggle_ignore'),

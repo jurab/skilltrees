@@ -82,6 +82,11 @@ class Pause(models.Model):
         return f'{self.skill.title} @ {self.time}s: {self.title}'
 
 
+class PreviewType(models.TextChoices):
+    STRUDEL = 'strudel', 'Strudel Player'
+    ANIMATION = 'animation', 'Custom Animation'
+
+
 class Tree(models.Model):
     """A course - a tree-like graph of skills leading to a goal."""
 
@@ -96,6 +101,16 @@ class Tree(models.Model):
     )
     resources_zip = models.FileField(upload_to='tree_resources/', blank=True)
     is_free = models.BooleanField(default=False)
+    preview_type = models.CharField(
+        max_length=20,
+        choices=PreviewType.choices,
+        default=PreviewType.ANIMATION,
+    )
+    preview_config = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text='Config for preview: strudel={pattern}, animation={type}',
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -43,6 +43,25 @@ def compute_dfs_sequence(nodes, goal_node):
     return sequence
 
 
+def homepage(request):
+    """Homepage with carousel of all skill trees."""
+    trees = Tree.objects.all()
+    trees_data = []
+    for t in trees:
+        trees_data.append({
+            'id': t.id,
+            'title': t.title,
+            'description': t.description,
+            'is_free': t.is_free,
+            'preview_type': t.preview_type,
+            'preview_config': t.preview_config,
+        })
+    return render(request, 'skills/homepage.html', {
+        'trees_json': json.dumps(trees_data),
+        'trees': trees,
+    })
+
+
 def tree_detail(request, pk):
     tree = get_object_or_404(Tree, pk=pk)
     nodes = list(tree.nodes.select_related('skill').prefetch_related(

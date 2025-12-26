@@ -280,6 +280,76 @@
   }
 },
 {
+  "model": "skills.skill",
+  "pk": 21,
+  "fields": {
+    "title": "Your First Sound",
+    "video_url": "",
+    "text": "# Your First Sound\n\nWelcome to Strudel! Let's make some noise.\n\n## The sound function\n\nThe most basic way to make sound in Strudel is with the `sound` function (or `s` for short):\n\n```javascript\nsound(\"bd\")\n```\n\nThis plays a bass drum. Try changing `bd` to other sounds like:\n- `sd` - snare drum\n- `hh` - hi-hat\n- `cp` - clap\n\n## Mini notation\n\nYou can put multiple sounds in a pattern:\n\n```javascript\nsound(\"bd sd bd sd\")\n```\n\nThis divides the sounds evenly across one cycle (like a bar of music).",
+    "duration": 180,
+    "creator": 2,
+    "created_at": "2025-12-26T12:00:00Z",
+    "updated_at": "2025-12-26T12:00:00Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 22,
+  "fields": {
+    "title": "Rhythmic Patterns",
+    "video_url": "",
+    "text": "# Rhythmic Patterns\n\nNow let's create more interesting rhythms using mini notation.\n\n## Subdivisions with brackets\n\nUse square brackets to subdivide time:\n\n```javascript\nsound(\"bd [sd sd] bd [sd hh hh]\")\n```\n\nThe sounds in brackets share the time of one slot.\n\n## Rests with tilde\n\nUse `~` for silence:\n\n```javascript\nsound(\"bd ~ sd ~\")\n```\n\n## Multiplication\n\nRepeat sounds with `*`:\n\n```javascript\nsound(\"hh*8\")\n```\n\nThis plays 8 hi-hats in one cycle!",
+    "duration": 240,
+    "creator": 2,
+    "created_at": "2025-12-26T12:00:00Z",
+    "updated_at": "2025-12-26T12:00:00Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 23,
+  "fields": {
+    "title": "Notes & Melody",
+    "video_url": "",
+    "text": "# Notes & Melody\n\nLet's add pitch to make melodies!\n\n## The note function\n\nUse `note` to set the pitch:\n\n```javascript\nsound(\"sawtooth\").note(\"c3 e3 g3 b3\")\n```\n\nYou can use note names (c, d, e...) with octave numbers.\n\n## Scales\n\nUse `scale` to stay in key:\n\n```javascript\nn(\"0 2 4 6\").scale(\"C:minor\").sound(\"piano\")\n```\n\nNumbers become scale degrees!\n\n## Arpeggios\n\nCreate arpeggios with angle brackets:\n\n```javascript\nsound(\"sawtooth\").note(\"<c3 e3 g3>\")\n```\n\nThis cycles through notes across patterns.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-26T12:00:00Z",
+    "updated_at": "2025-12-26T12:00:00Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 24,
+  "fields": {
+    "title": "Effects & Filters",
+    "video_url": "",
+    "text": "# Effects & Filters\n\nTime to shape your sound with effects!\n\n## Low-pass filter (lpf)\n\nCut high frequencies for warmer sounds:\n\n```javascript\nsound(\"sawtooth\").note(\"c2\").lpf(800)\n```\n\nLower numbers = darker sound. Try values from 100 to 5000!\n\n## Reverb\n\nAdd space with reverb:\n\n```javascript\nsound(\"sd\").room(0.8)\n```\n\n## Delay\n\nCreate echoes:\n\n```javascript\nsound(\"cp\").delay(0.5).delaytime(0.125)\n```\n\n## Combining effects\n\nChain them together:\n\n```javascript\nsound(\"sawtooth\")\n  .note(\"c2 eb2 g2 bb2\")\n  .lpf(600)\n  .room(0.5)\n```",
+    "duration": 360,
+    "creator": 2,
+    "created_at": "2025-12-26T12:00:00Z",
+    "updated_at": "2025-12-26T12:00:00Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 25,
+  "fields": {
+    "title": "Your First Track",
+    "video_url": "",
+    "text": "# Your First Track\n\nLet's combine everything into a complete track!\n\n## Stacking patterns\n\nUse `stack` to layer sounds:\n\n```javascript\nstack(\n  sound(\"bd sd:2 bd sd:1\"),\n  sound(\"hh*8\").gain(0.5),\n  sound(\"sawtooth\")\n    .note(\"<c2 eb2 g2 bb2>\")\n    .lpf(800)\n)\n```\n\n## Adding variation\n\nUse `every` for change over time:\n\n```javascript\nsound(\"bd sd bd sd\")\n  .every(4, x => x.speed(2))\n```\n\n## Final challenge\n\nCombine drums, bass, and melody with effects. Experiment with `lpf`, `room`, and `gain` to mix your track!\n\nCongratulations - you're now making live coded music!",
+    "duration": 420,
+    "creator": 2,
+    "created_at": "2025-12-26T12:00:00Z",
+    "updated_at": "2025-12-26T12:00:00Z",
+    "resources": []
+  }
+},
+{
   "model": "skills.pause",
   "pk": 1,
   "fields": {
@@ -300,8 +370,30 @@
     "goal_skill": 20,
     "resources_zip": "",
     "is_free": true,
+    "preview_type": "animation",
+    "preview_config": {
+      "type": "linkedin-scraper"
+    },
     "created_at": "2025-12-25T14:39:33.425Z",
     "updated_at": "2025-12-25T14:39:33.425Z"
+  }
+},
+{
+  "model": "skills.tree",
+  "pk": 2,
+  "fields": {
+    "title": "Strudel.cc Basics",
+    "description": "Learn live coding music with Strudel - create beats, melodies, and full tracks in your browser.",
+    "intro_video_url": "",
+    "goal_skill": 25,
+    "resources_zip": "",
+    "is_free": true,
+    "preview_type": "strudel",
+    "preview_config": {
+      "pattern": "stack(sound(\"bd sd:2 bd sd:1\"),sound(\"hh*8\").gain(0.5),sound(\"sawtooth\").note(\"<c2 eb2 g2 bb2>\").lpf(800).room(0.3))"
+    },
+    "created_at": "2025-12-26T12:00:00Z",
+    "updated_at": "2025-12-26T12:00:00Z"
   }
 },
 {
@@ -510,6 +602,46 @@
   "fields": {
     "tree": 1,
     "skill": 20
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 27,
+  "fields": {
+    "tree": 2,
+    "skill": 21
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 28,
+  "fields": {
+    "tree": 2,
+    "skill": 22
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 29,
+  "fields": {
+    "tree": 2,
+    "skill": 23
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 30,
+  "fields": {
+    "tree": 2,
+    "skill": 24
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 31,
+  "fields": {
+    "tree": 2,
+    "skill": 25
   }
 },
 {
@@ -760,6 +892,46 @@
     "to_node": 26,
     "optional": false,
     "priority": 3
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 26,
+  "fields": {
+    "from_node": 27,
+    "to_node": 28,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 27,
+  "fields": {
+    "from_node": 28,
+    "to_node": 29,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 28,
+  "fields": {
+    "from_node": 29,
+    "to_node": 30,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 29,
+  "fields": {
+    "from_node": 30,
+    "to_node": 31,
+    "optional": false,
+    "priority": 0
   }
 },
 {
