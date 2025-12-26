@@ -110,6 +110,10 @@
         .sidebar-item.skipped {
             opacity: 0.6;
         }
+        .sidebar-item.ignored {
+            opacity: 0.4;
+            color: #ff4444;
+        }
         .sidebar-item.next {
             color: #00ff88;
             background: rgba(0, 255, 136, 0.05);
@@ -132,11 +136,10 @@
         }
         #node-detail.active {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             padding: 40px;
             box-sizing: border-box;
             overflow-y: auto;
+            gap: 30px;
         }
         #node-detail-close {
             position: absolute;
@@ -150,18 +153,72 @@
         #node-detail-close:hover {
             color: #aaa;
         }
+        #node-detail-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+        }
+        #node-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
         #node-detail-title {
             color: #aaa;
             font-size: 18px;
-            margin-bottom: 30px;
+            text-align: center;
+            flex: 1;
+        }
+        #node-detail-ignore {
+            background: transparent;
+            border: 1px solid #ff4444;
+            color: #ff4444;
+            padding: 8px 16px;
+            font-family: 'courier new', monospace;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        #node-detail-ignore:hover {
+            background: #ff4444;
+            color: #050505;
+        }
+        #node-detail-ignore.is-ignored {
+            border-color: #666;
+            color: #666;
+        }
+        #node-detail-ignore.is-ignored:hover {
+            background: #666;
+            color: #050505;
+        }
+        #node-detail-complete {
+            background: transparent;
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 8px 16px;
+            font-family: 'courier new', monospace;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        #node-detail-complete:hover {
+            background: #00ff88;
+            color: #050505;
+        }
+        #node-detail-complete.is-done {
+            border-color: #666;
+            color: #666;
+        }
+        #node-detail-complete.is-done:hover {
+            background: #666;
+            color: #050505;
         }
         #node-detail-video {
             width: 100%;
-            max-width: 800px;
             aspect-ratio: 16/9;
             background: #111;
             border: 1px solid #222;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -174,8 +231,8 @@
         }
         #node-detail-resources {
             display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 20px;
         }
         .resource-item {
             display: flex;
@@ -195,32 +252,30 @@
             font-size: 16px;
         }
         #node-detail-description {
-            max-width: 800px;
             color: #666;
             font-size: 13px;
             line-height: 1.8;
-            margin-bottom: 30px;
         }
         #node-detail-prerequisites {
-            max-width: 800px;
-            width: 100%;
-            margin-bottom: 30px;
+            width: 250px;
+            flex-shrink: 0;
+            padding-top: 50px;
         }
         #node-detail-prerequisites h3 {
             color: #666;
             font-size: 12px;
             font-weight: normal;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         #node-detail-prereq-list {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            flex-direction: column;
+            gap: 8px;
         }
         .prereq-item {
             color: #555;
             font-size: 11px;
-            padding: 6px 12px;
+            padding: 8px 12px;
             border: 1px solid #222;
             cursor: pointer;
         }
@@ -231,27 +286,9 @@
         .prereq-item.done {
             opacity: 0.4;
         }
-        #node-detail-complete {
-            background: transparent;
-            border: 1px solid #00ff88;
-            color: #00ff88;
-            padding: 12px 30px;
-            font-family: 'courier new', monospace;
-            font-size: 12px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        #node-detail-complete:hover {
-            background: #00ff88;
-            color: #050505;
-        }
-        #node-detail-complete.is-done {
-            border-color: #666;
-            color: #666;
-        }
-        #node-detail-complete.is-done:hover {
-            background: #666;
-            color: #050505;
+        .prereq-item.ignored {
+            opacity: 0.4;
+            border-color: #ff4444;
         }
     </style>
 </head>
@@ -273,28 +310,22 @@
 
     <div id="node-detail">
         <div id="node-detail-close">&times;</div>
-        <div id="node-detail-title">Skill Title</div>
-        <div id="node-detail-video">
-            <span>video placeholder</span>
-        </div>
-        <div id="node-detail-resources">
-            <div class="resource-item">
-                <span class="resource-icon">&#8595;</span>
-                <span>workflow.json</span>
+        <div id="node-detail-main">
+            <div id="node-detail-header">
+                <button id="node-detail-ignore">never again</button>
+                <div id="node-detail-title">Skill Title</div>
+                <button id="node-detail-complete">mark as complete</button>
             </div>
-            <div class="resource-item">
-                <span class="resource-icon">&#8595;</span>
-                <span>config.json</span>
+            <div id="node-detail-video">
+                <span>video placeholder</span>
             </div>
-        </div>
-        <div id="node-detail-description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <div id="node-detail-resources"></div>
+            <div id="node-detail-description"></div>
         </div>
         <div id="node-detail-prerequisites">
             <h3>prerequisites</h3>
             <div id="node-detail-prereq-list"></div>
         </div>
-        <button id="node-detail-complete">mark as complete</button>
     </div>
 
     <script>
@@ -345,6 +376,14 @@
                         selector: '.skipped',
                         style: {
                             'opacity': 0.6
+                        }
+                    },
+                    {
+                        selector: '.ignored',
+                        style: {
+                            'opacity': 0.4,
+                            'border-color': '#ff4444',
+                            'color': '#ff4444'
                         }
                     },
                     {
@@ -410,7 +449,9 @@
 
             // Apply initial states from server
             cy.nodes().forEach(function(node) {
-                if (node.data('done')) {
+                if (node.data('ignored')) {
+                    node.addClass('ignored');
+                } else if (node.data('done')) {
                     node.addClass('done');
                 } else if (node.data('next')) {
                     node.addClass('next');
@@ -435,7 +476,8 @@
                 sequence.forEach(function(item) {
                     var div = document.createElement('div');
                     div.className = 'sidebar-item';
-                    if (item.done) div.classList.add('done');
+                    if (item.ignored) div.classList.add('ignored');
+                    else if (item.done) div.classList.add('done');
                     if (item.next) div.classList.add('next');
                     if (item.skipped) div.classList.add('skipped');
                     div.dataset.nodeId = item.node_id;
@@ -454,18 +496,18 @@
                         // Get all ancestors (predecessors recursively)
                         var ancestors = node.predecessors('node');
                         ancestors.forEach(function(ancestor) {
-                            if (!ancestor.data('done')) {
+                            if (!ancestor.data('done') && !ancestor.data('ignored')) {
                                 skippedNodeIds.add(ancestor.id());
                             }
                         });
                     }
                 });
 
-                // Find next (first non-done, non-skipped in sequence)
+                // Find next (first non-done, non-skipped, non-ignored in sequence)
                 var nextIdx = -1;
                 for (var i = 0; i < sequence.length; i++) {
                     var node = cy.getElementById(sequence[i].node_id);
-                    if (!node.data('done') && !skippedNodeIds.has(sequence[i].node_id)) {
+                    if (!node.data('done') && !node.data('ignored') && !skippedNodeIds.has(sequence[i].node_id)) {
                         nextIdx = i;
                         break;
                     }
@@ -476,15 +518,18 @@
                     var item = sequence[i];
                     var node = cy.getElementById(item.node_id);
                     var isDone = node.data('done');
+                    var isIgnored = node.data('ignored');
                     var isSkipped = skippedNodeIds.has(item.node_id);
                     var isNext = (i === nextIdx);
 
                     item.done = isDone;
+                    item.ignored = isIgnored;
                     item.next = isNext;
                     item.skipped = isSkipped;
 
-                    node.removeClass('done next skipped');
-                    if (isDone) node.addClass('done');
+                    node.removeClass('done next skipped ignored');
+                    if (isIgnored) node.addClass('ignored');
+                    else if (isDone) node.addClass('done');
                     else if (isNext) node.addClass('next');
                     else if (isSkipped) node.addClass('skipped');
                 }
@@ -497,17 +542,30 @@
             var nodeDetailClose = document.getElementById('node-detail-close');
             var nodeDetailPrereqList = document.getElementById('node-detail-prereq-list');
             var nodeDetailComplete = document.getElementById('node-detail-complete');
+            var nodeDetailIgnore = document.getElementById('node-detail-ignore');
             var currentNode = null;
             var tapTimeout = null;
             var tapDelay = 250;
 
-            function updateCompleteButton() {
-                if (currentNode && currentNode.data('done')) {
-                    nodeDetailComplete.textContent = 'mark as incomplete';
+            function updateButtons() {
+                if (!currentNode) return;
+                
+                // Update complete button
+                if (currentNode.data('done')) {
+                    nodeDetailComplete.textContent = 'completed';
                     nodeDetailComplete.classList.add('is-done');
                 } else {
                     nodeDetailComplete.textContent = 'mark as complete';
                     nodeDetailComplete.classList.remove('is-done');
+                }
+                
+                // Update ignore button
+                if (currentNode.data('ignored')) {
+                    nodeDetailIgnore.textContent = 'ignored';
+                    nodeDetailIgnore.classList.add('is-ignored');
+                } else {
+                    nodeDetailIgnore.textContent = 'never again';
+                    nodeDetailIgnore.classList.remove('is-ignored');
                 }
             }
 
@@ -539,22 +597,57 @@
                 .catch(err => console.error('Error:', err));
             }
 
+            function toggleNodeIgnore(nodeId, callback) {
+                var numericId = nodeId.replace('n', '');
+                fetch('/node/' + numericId + '/ignore/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+                    // Update all nodes with the same skill_id
+                    cy.nodes().forEach(function(n) {
+                        if (n.data('skill_id') === data.skill_id) {
+                            n.data('ignored', data.ignored);
+                            if (data.ignored) {
+                                n.data('done', false);
+                            }
+                        }
+                    });
+                    updateStates();
+                    if (callback) callback(data);
+                })
+                .catch(err => console.error('Error:', err));
+            }
+
             function showNodeDetail(node) {
                 currentNode = node;
                 nodeDetailTitle.textContent = currentNode.data('name');
 
-                // Get direct predecessors (first-order prerequisites)
-                var predecessors = currentNode.incomers('node');
+                // Get full prerequisite branch (all ancestors)
+                var ancestors = currentNode.predecessors('node');
                 nodeDetailPrereqList.innerHTML = '';
 
-                if (predecessors.length === 0) {
+                if (ancestors.length === 0) {
                     nodeDetailPrereqList.innerHTML = '<span style="color:#444;font-size:11px;">none</span>';
                 } else {
-                    predecessors.forEach(function(prereq) {
+                    // Sort by distance from current node (closest first)
+                    var ancestorList = ancestors.toArray().reverse();
+                    ancestorList.forEach(function(prereq) {
                         var item = document.createElement('div');
                         item.className = 'prereq-item';
                         if (prereq.data('done')) {
                             item.classList.add('done');
+                        }
+                        if (prereq.data('ignored')) {
+                            item.classList.add('ignored');
                         }
                         item.textContent = prereq.data('name');
                         item.dataset.nodeId = prereq.id();
@@ -563,7 +656,7 @@
                     });
                 }
 
-                updateCompleteButton();
+                updateButtons();
                 nodeDetail.classList.add('active');
             }
 
@@ -638,18 +731,16 @@
                 if (!currentNode) return;
                 var nodeId = currentNode.id();
                 toggleNodeCompletion(nodeId, function(data) {
-                    updateCompleteButton();
-                    var prereqItems = nodeDetailPrereqList.querySelectorAll('.prereq-item');
-                    prereqItems.forEach(function(item) {
-                        var prereqNode = cy.nodes().filter(function(n) {
-                            return n.data('name') === item.textContent;
-                        })[0];
-                        if (prereqNode && prereqNode.data('done')) {
-                            item.classList.add('done');
-                        } else {
-                            item.classList.remove('done');
-                        }
-                    });
+                    updateButtons();
+                });
+            });
+
+            // ignore button click
+            nodeDetailIgnore.addEventListener('click', function() {
+                if (!currentNode) return;
+                var nodeId = currentNode.id();
+                toggleNodeIgnore(nodeId, function(data) {
+                    updateButtons();
                 });
             });
 
@@ -680,10 +771,10 @@
                 toggleNodeCompletion(nodeId);
             });
 
-            // Slow down scroll speed (except in sidebar)
+            // Slow down scroll speed (except in sidebar and node detail)
             document.addEventListener('wheel', function(e) {
-                if (e.target.closest('#sidebar')) {
-                    return; // Let sidebar scroll normally
+                if (e.target.closest('#sidebar') || e.target.closest('#node-detail')) {
+                    return; // Let these scroll normally
                 }
                 e.preventDefault();
                 var scrollSpeed = 0.3;

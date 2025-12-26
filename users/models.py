@@ -26,3 +26,10 @@ class User(AbstractUser):
         blank=True,
         related_name='completed_by',
     )
+
+    # Ignored skills (user never wants to see these)
+    ignored_skills = models.ManyToManyField(
+        'skills.Skill',
+        blank=True,
+        related_name='ignored_by',
+    )

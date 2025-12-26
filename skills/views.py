@@ -61,11 +61,13 @@ def tree_detail(request, pk):
             goal_node = node
             break
 
-    # Get user's completed skills and last node
+    # Get user's completed/ignored skills and last node
     completed_skill_ids = set()
+    ignored_skill_ids = set()
     last_node_id = None
     if request.user.is_authenticated:
         completed_skill_ids = set(request.user.completed_skills.values_list('id', flat=True))
+        ignored_skill_ids = set(request.user.ignored_skills.values_list('id', flat=True))
         if request.user.last_node_id:
             last_node_id = request.user.last_node_id
 
@@ -99,14 +101,16 @@ def tree_detail(request, pk):
     for i, node_id in enumerate(sequence):
         node = node_by_id[node_id]
         is_done = node.skill_id in completed_skill_ids
+        is_ignored = node.skill_id in ignored_skill_ids
         is_next = node_id == next_node_id
-        is_skipped = not is_done and i < position + 1 and not is_next
+        is_skipped = not is_done and not is_ignored and i < position + 1 and not is_next
         
         sequence_data.append({
             'node_id': f'n{node_id}',
             'skill_id': node.skill_id,
             'name': node.skill.title,
             'done': is_done,
+            'ignored': is_ignored,
             'next': is_next,
             'skipped': is_skipped,
         })
@@ -117,8 +121,9 @@ def tree_detail(request, pk):
     # Add nodes
     for node in nodes:
         is_done = node.skill_id in completed_skill_ids
+        is_ignored = node.skill_id in ignored_skill_ids
         is_next = node.id == next_node_id
-        is_skipped = not is_done and node.id in sequence[:position + 1] and not is_next
+        is_skipped = not is_done and not is_ignored and node.id in sequence[:position + 1] and not is_next
         
         elements.append({
             'data': {
@@ -126,6 +131,7 @@ def tree_detail(request, pk):
                 'name': node.skill.title,
                 'skill_id': node.skill.id,
                 'done': is_done,
+                'ignored': is_ignored,
                 'next': is_next,
                 'skipped': is_skipped,
             }
@@ -170,3 +176,24 @@ def toggle_skill(request, node_id):
     request.user.save()
 
     return JsonResponse({'skill_id': skill.id, 'node_id': node.id, 'done': done})
+
+
+@require_POST
+def toggle_ignore(request, node_id):
+    """Toggle a skill's ignored status for the current user."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Not authenticated'}, status=401)
+
+    node = get_object_or_404(Node, pk=node_id)
+    skill = node.skill
+
+    if skill in request.user.ignored_skills.all():
+        request.user.ignored_skills.remove(skill)
+        ignored = False
+    else:
+        request.user.ignored_skills.add(skill)
+        # Also remove from completed if ignoring
+        request.user.completed_skills.remove(skill)
+        ignored = True
+
+    return JsonResponse({'skill_id': skill.id, 'node_id': node.id, 'ignored': ignored})
