@@ -901,11 +901,13 @@
                 }
                 updateNav();
                 
-                // After animation, teleport if we hit the clone
+                // After animation, instantly teleport if we hit the clone
                 setTimeout(function() {
                     if (currentIndex === 0) {
                         // We scrolled to the first clone, teleport to real first
+                        carousel.style.scrollBehavior = 'auto';
                         carousel.scrollLeft = window.innerWidth;
+                        carousel.style.scrollBehavior = '';
                     }
                     isAnimating = false;
                 }, 400);
@@ -931,7 +933,9 @@
                 setTimeout(function() {
                     if (currentIndex === numSlides - 1) {
                         // We scrolled to the last clone, teleport to real last
+                        carousel.style.scrollBehavior = 'auto';
                         carousel.scrollLeft = window.innerWidth * numSlides;
+                        carousel.style.scrollBehavior = '';
                     }
                     isAnimating = false;
                 }, 400);
