@@ -56,10 +56,27 @@ class Pause(models.Model):
         blank=True,
         related_name='pause_attachments',
     )
+    clipboard = models.TextField(
+        blank=True,
+        help_text='Text to copy to clipboard when button is clicked',
+    )
 
     class Meta:
         ordering = ['time']
         unique_together = ['skill', 'time']
+        constraints = [
+            models.CheckConstraint(
+                check=~(
+                    models.Q(attachment__isnull=False) & ~models.Q(clipboard='')
+                ),
+                name='pause_not_both_attachment_and_clipboard',
+            ),
+        ]
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.attachment and self.clipboard:
+            raise ValidationError('A pause cannot have both an attachment and clipboard text. Choose one.')
 
     def __str__(self):
         return f'{self.skill.title} @ {self.time}s: {self.title}'

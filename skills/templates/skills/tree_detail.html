@@ -373,15 +373,16 @@
         #node-detail-video {
             width: 100%;
             aspect-ratio: 16/9;
-            background: var(--bg-hover);
+            background: black;
             border: 1px solid var(--border-default);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
+            position: relative;
+            overflow: hidden;
         }
         #node-detail-video iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border: none;
@@ -465,6 +466,44 @@
             border-color: var(--color-danger);
             color: var(--text-primary);
         }
+
+        /* Pause button */
+        #pause-button-container {
+            display: none;
+            margin-top: 15px;
+        }
+        #pause-button-container.active {
+            display: block;
+        }
+        #pause-button {
+            background: transparent;
+            border: 1px solid var(--color-action);
+            color: var(--color-action);
+            padding: 12px 24px;
+            font-family: 'courier new', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        #pause-button:hover {
+            background: var(--color-action);
+            color: var(--bg-base);
+        }
+        #pause-button.salient {
+            animation: pulse 1.5s ease-in-out infinite, shine 2s ease-in-out infinite;
+        }
+        #pause-button.clicked {
+            animation: none;
+            opacity: 0.6;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes shine {
+            0%, 100% { box-shadow: 0 0 5px var(--color-action); }
+            50% { box-shadow: 0 0 20px var(--color-action), 0 0 30px var(--color-action); }
+        }
     </style>
 </head>
 <body>
@@ -500,8 +539,9 @@
                 <div id="node-detail-title">Skill Title</div>
                 <button id="node-detail-complete">mark as complete</button>
             </div>
-            <div id="node-detail-video">
-                <span>video placeholder</span>
+            <div id="node-detail-video"></div>
+            <div id="pause-button-container">
+                <button id="pause-button">continue</button>
             </div>
 
             <div id="node-detail-resources"></div>
@@ -871,6 +911,174 @@
                 .catch(err => console.error('Error:', err));
             }
 
+            // YouTube API loading
+            var ytReady = false;
+            var ytReadyCallbacks = [];
+            
+            function loadYouTubeAPI() {
+                if (window.YT && window.YT.Player) {
+                    ytReady = true;
+                    return;
+                }
+                var tag = document.createElement('script');
+                tag.src = 'https://www.youtube.com/iframe_api';
+                var firstScript = document.getElementsByTagName('script')[0];
+                firstScript.parentNode.insertBefore(tag, firstScript);
+            }
+            
+            window.onYouTubeIframeAPIReady = function() {
+                ytReady = true;
+                ytReadyCallbacks.forEach(function(cb) { cb(); });
+                ytReadyCallbacks = [];
+            };
+            
+            function whenYTReady(callback) {
+                if (ytReady) {
+                    callback();
+                } else {
+                    ytReadyCallbacks.push(callback);
+                }
+            }
+            
+            loadYouTubeAPI();
+
+            // YouTube player and pause state
+            var player = null;
+            var currentPauses = [];
+            var nextPauseIndex = 0;
+            var pauseCheckInterval = null;
+            var nodeDetailVideo = document.getElementById('node-detail-video');
+            var pauseButtonContainer = document.getElementById('pause-button-container');
+            var pauseButton = document.getElementById('pause-button');
+            var currentPauseData = null;
+
+            function extractVideoId(url) {
+                // Handle embed URLs: https://www.youtube.com/embed/VIDEO_ID
+                var embedMatch = url.match(/\/embed\/([^?&]+)/);
+                if (embedMatch) return embedMatch[1];
+                // Handle watch URLs: https://www.youtube.com/watch?v=VIDEO_ID
+                var watchMatch = url.match(/[?&]v=([^&]+)/);
+                if (watchMatch) return watchMatch[1];
+                // Handle short URLs: https://youtu.be/VIDEO_ID
+                var shortMatch = url.match(/youtu\.be\/([^?&]+)/);
+                if (shortMatch) return shortMatch[1];
+                return null;
+            }
+
+            function setupVideo(videoUrl, pauses) {
+                currentPauses = pauses || [];
+                nextPauseIndex = 0;
+                currentPauseData = null;
+                
+                // Hide pause button initially
+                pauseButtonContainer.classList.remove('active');
+                pauseButton.classList.remove('salient', 'clicked');
+                
+                // Clear any existing interval
+                if (pauseCheckInterval) {
+                    clearInterval(pauseCheckInterval);
+                    pauseCheckInterval = null;
+                }
+                
+                var videoId = extractVideoId(videoUrl);
+                if (!videoId) {
+                    nodeDetailVideo.innerHTML = '<span style="color:var(--text-muted);">Invalid video URL</span>';
+                    return;
+                }
+                
+                // Destroy existing player
+                if (player) {
+                    player.destroy();
+                    player = null;
+                }
+                
+                // Create new player once API is ready
+                nodeDetailVideo.innerHTML = '<div id="yt-player"></div>';
+                whenYTReady(function() {
+                    player = new YT.Player('yt-player', {
+                        videoId: videoId,
+                        playerVars: {
+                            'playsinline': 1
+                        },
+                        events: {
+                            'onReady': onPlayerReady,
+                            'onStateChange': onPlayerStateChange
+                        }
+                    });
+                });
+            }
+
+            function onPlayerReady(event) {
+                // Start checking for pause points
+                if (currentPauses.length > 0) {
+                    pauseCheckInterval = setInterval(checkPausePoints, 200);
+                }
+            }
+
+            function onPlayerStateChange(event) {
+                // If video ends or is paused by user, stop checking
+                if (event.data === YT.PlayerState.ENDED) {
+                    if (pauseCheckInterval) {
+                        clearInterval(pauseCheckInterval);
+                        pauseCheckInterval = null;
+                    }
+                }
+            }
+
+            function checkPausePoints() {
+                if (!player || nextPauseIndex >= currentPauses.length) return;
+                
+                var currentTime = player.getCurrentTime();
+                var nextPause = currentPauses[nextPauseIndex];
+                
+                if (currentTime >= nextPause.time) {
+                    // Pause the video
+                    player.pauseVideo();
+                    
+                    // Show the button
+                    currentPauseData = nextPause;
+                    pauseButton.textContent = nextPause.title;
+                    pauseButton.classList.remove('clicked');
+                    pauseButton.classList.add('salient');
+                    pauseButtonContainer.classList.add('active');
+                    
+                    nextPauseIndex++;
+                }
+            }
+
+            function handlePauseButtonClick() {
+                if (!currentPauseData) return;
+                
+                // Handle clipboard - don't auto-resume, user needs to paste somewhere
+                if (currentPauseData.clipboard) {
+                    navigator.clipboard.writeText(currentPauseData.clipboard).then(function() {
+                        console.log('Copied to clipboard');
+                    }).catch(function(err) {
+                        console.error('Failed to copy:', err);
+                    });
+                    pauseButton.classList.remove('salient');
+                    pauseButton.classList.add('clicked');
+                    return;
+                }
+                
+                // Handle attachment download - don't auto-resume
+                if (currentPauseData.attachment_url) {
+                    window.open(currentPauseData.attachment_url, '_blank');
+                    pauseButton.classList.remove('salient');
+                    pauseButton.classList.add('clicked');
+                    return;
+                }
+                
+                // Continue button (no clipboard/attachment) - resume video
+                pauseButton.classList.remove('salient');
+                pauseButton.classList.add('clicked');
+                if (player) {
+                    player.playVideo();
+                }
+            }
+
+            pauseButton.addEventListener('click', handlePauseButtonClick);
+
             function showNodeDetail(node) {
                 currentNode = node;
                 nodeDetailTitle.textContent = currentNode.data('name');
@@ -914,6 +1122,11 @@
                     item.dataset.skillId = seqItem.skill_id;
                     nodeDetailSequenceList.appendChild(item);
                 });
+
+                // Setup video with pauses
+                var videoUrl = currentNode.data('video_url');
+                var pauses = currentNode.data('pauses') || [];
+                setupVideo(videoUrl, pauses);
 
                 updateButtons();
                 nodeDetail.classList.add('active');
@@ -1052,22 +1265,33 @@
             });
 
             // close node detail
-            nodeDetailClose.addEventListener('click', function() {
+            function closeNodeDetail() {
                 nodeDetail.classList.remove('active');
                 currentNode = null;
-            });
+                
+                // Cleanup video
+                if (pauseCheckInterval) {
+                    clearInterval(pauseCheckInterval);
+                    pauseCheckInterval = null;
+                }
+                if (player) {
+                    player.destroy();
+                    player = null;
+                }
+                pauseButtonContainer.classList.remove('active');
+            }
+
+            nodeDetailClose.addEventListener('click', closeNodeDetail);
 
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape') {
-                    nodeDetail.classList.remove('active');
-                    currentNode = null;
+                    closeNodeDetail();
                 }
             });
 
             nodeDetail.addEventListener('click', function(e) {
                 if (e.target === nodeDetail) {
-                    nodeDetail.classList.remove('active');
-                    currentNode = null;
+                    closeNodeDetail();
                 }
             });
 

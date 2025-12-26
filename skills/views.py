@@ -48,6 +48,7 @@ def tree_detail(request, pk):
     nodes = list(tree.nodes.select_related('skill').prefetch_related(
         'incoming_edges__from_node',
         'outgoing_edges__to_node',
+        'skill__pauses',
     ))
     
     node_by_id = {n.id: n for n in nodes}
@@ -125,15 +126,32 @@ def tree_detail(request, pk):
         is_next = node.id == next_node_id
         is_skipped = not is_done and not is_ignored and node.id in sequence[:position + 1] and not is_next
         
+        # Build pause data for this skill
+        pauses = []
+        for pause in node.skill.pauses.all():
+            pause_data = {
+                'time': pause.time,
+                'title': pause.title,
+            }
+            if pause.clipboard:
+                pause_data['clipboard'] = pause.clipboard
+            elif pause.attachment:
+                pause_data['attachment_url'] = pause.attachment.file.url
+                pause_data['attachment_title'] = pause.attachment.title
+            # else: just a continue button
+            pauses.append(pause_data)
+        
         elements.append({
             'data': {
                 'id': f'n{node.id}',
                 'name': node.skill.title,
                 'skill_id': node.skill.id,
+                'video_url': node.skill.video_url,
                 'done': is_done,
                 'ignored': is_ignored,
                 'next': is_next,
                 'skipped': is_skipped,
+                'pauses': pauses,
             }
         })
 
