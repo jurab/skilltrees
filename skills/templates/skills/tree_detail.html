@@ -386,6 +386,7 @@
             height: 100%;
             border: none;
         }
+
         #node-detail-resources {
             display: flex;
             gap: 15px;
@@ -413,39 +414,56 @@
             font-size: 13px;
             line-height: 1.8;
         }
-        #node-detail-prerequisites {
+        #node-detail-sequence {
             width: 250px;
             flex-shrink: 0;
-            padding-top: 50px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: 100%;
         }
-        #node-detail-prerequisites h3 {
+        #node-detail-sequence h3 {
             color: var(--text-secondary);
             font-size: 12px;
             font-weight: normal;
             margin-bottom: 15px;
+            padding-top: 50px;
         }
-        #node-detail-prereq-list {
+        #node-detail-sequence-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
+            overflow-y: auto;
         }
-        .prereq-item {
+        .sequence-item {
             color: var(--text-dim);
             font-size: 11px;
             padding: 8px 12px;
-            border: 1px solid var(--border-default);
+            border: 1px solid transparent;
             cursor: pointer;
         }
-        .prereq-item:hover {
-            border-color: var(--border-hover);
+        .sequence-item:hover {
+            background: var(--bg-hover);
             color: var(--text-primary);
         }
-        .prereq-item.done {
-            opacity: 0.4;
+        .sequence-item.current {
+            border-color: var(--text-bright);
+            color: var(--text-bright);
         }
-        .prereq-item.ignored {
+        .sequence-item.done {
+            opacity: 0.5;
+            color: var(--color-action);
+        }
+        .sequence-item.done::before {
+            content: '✓ ';
+        }
+        .sequence-item.ignored {
             opacity: 0.4;
+            color: var(--color-danger);
+        }
+        .sequence-item.unfinished-prereq {
             border-color: var(--color-danger);
+            color: var(--text-primary);
         }
     </style>
 </head>
@@ -485,12 +503,13 @@
             <div id="node-detail-video">
                 <span>video placeholder</span>
             </div>
+
             <div id="node-detail-resources"></div>
             <div id="node-detail-description"></div>
         </div>
-        <div id="node-detail-prerequisites">
-            <h3>prerequisites</h3>
-            <div id="node-detail-prereq-list"></div>
+        <div id="node-detail-sequence">
+            <h3>sequence</h3>
+            <div id="node-detail-sequence-list"></div>
         </div>
     </div>
 
@@ -765,7 +784,7 @@
             var nodeDetail = document.getElementById('node-detail');
             var nodeDetailTitle = document.getElementById('node-detail-title');
             var nodeDetailClose = document.getElementById('node-detail-close');
-            var nodeDetailPrereqList = document.getElementById('node-detail-prereq-list');
+            var nodeDetailSequenceList = document.getElementById('node-detail-sequence-list');
             var nodeDetailComplete = document.getElementById('node-detail-complete');
             var nodeDetailIgnore = document.getElementById('node-detail-ignore');
             var currentNode = null;
@@ -856,33 +875,54 @@
                 currentNode = node;
                 nodeDetailTitle.textContent = currentNode.data('name');
 
-                // Get full prerequisite branch (all ancestors)
+                // Get unfinished prerequisites for this node
                 var ancestors = currentNode.predecessors('node');
-                nodeDetailPrereqList.innerHTML = '';
+                var unfinishedPrereqIds = new Set();
+                ancestors.forEach(function(prereq) {
+                    if (!prereq.data('done') && !prereq.data('ignored')) {
+                        unfinishedPrereqIds.add(prereq.id());
+                    }
+                });
 
-                if (ancestors.length === 0) {
-                    nodeDetailPrereqList.innerHTML = '<span style="color:var(--text-muted);font-size:11px;">none</span>';
-                } else {
-                    // Sort by distance from current node (closest first)
-                    var ancestorList = ancestors.toArray().reverse();
-                    ancestorList.forEach(function(prereq) {
-                        var item = document.createElement('div');
-                        item.className = 'prereq-item';
-                        if (prereq.data('done')) {
-                            item.classList.add('done');
-                        }
-                        if (prereq.data('ignored')) {
-                            item.classList.add('ignored');
-                        }
-                        item.textContent = prereq.data('name');
-                        item.dataset.nodeId = prereq.id();
-                        item.dataset.skillId = prereq.data('skill_id');
-                        nodeDetailPrereqList.appendChild(item);
-                    });
-                }
+                // Render full sequence list
+                nodeDetailSequenceList.innerHTML = '';
+                sequence.forEach(function(seqItem) {
+                    var item = document.createElement('div');
+                    item.className = 'sequence-item';
+                    
+                    var seqNode = cy.getElementById(seqItem.node_id);
+                    
+                    // Mark current node
+                    if (seqItem.node_id === currentNode.id()) {
+                        item.classList.add('current');
+                    }
+                    // Mark done
+                    if (seqNode.data('done')) {
+                        item.classList.add('done');
+                    }
+                    // Mark ignored
+                    if (seqNode.data('ignored')) {
+                        item.classList.add('ignored');
+                    }
+                    // Mark unfinished prerequisites
+                    if (unfinishedPrereqIds.has(seqItem.node_id)) {
+                        item.classList.add('unfinished-prereq');
+                    }
+                    
+                    item.textContent = seqItem.name;
+                    item.dataset.nodeId = seqItem.node_id;
+                    item.dataset.skillId = seqItem.skill_id;
+                    nodeDetailSequenceList.appendChild(item);
+                });
 
                 updateButtons();
                 nodeDetail.classList.add('active');
+                
+                // Scroll current item into view
+                var currentItem = nodeDetailSequenceList.querySelector('.current');
+                if (currentItem) {
+                    currentItem.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                }
             }
 
             // single tap: show node detail (with delay to allow double-tap)
@@ -968,30 +1008,27 @@
                 }
             });
 
-            // prerequisite click handling (single = navigate, double = toggle)
-            var prereqTapTimeout = null;
-            nodeDetailPrereqList.addEventListener('click', function(e) {
-                var item = e.target.closest('.prereq-item');
+            // sequence click handling (single = navigate, double = toggle)
+            var seqTapTimeout = null;
+            nodeDetailSequenceList.addEventListener('click', function(e) {
+                var item = e.target.closest('.sequence-item');
                 if (!item) return;
 
                 var nodeId = item.dataset.nodeId;
                 var skillId = parseInt(item.dataset.skillId);
-                var prereqNode = cy.getElementById(nodeId);
+                var seqNode = cy.getElementById(nodeId);
 
-                if (prereqTapTimeout) {
-                    clearTimeout(prereqTapTimeout);
-                    prereqTapTimeout = null;
+                if (seqTapTimeout) {
+                    clearTimeout(seqTapTimeout);
+                    seqTapTimeout = null;
                     toggleNodeCompletion(nodeId, function(data) {
-                        if (data.done) {
-                            item.classList.add('done');
-                        } else {
-                            item.classList.remove('done');
-                        }
+                        // Refresh the sequence list to update all states
+                        showNodeDetail(currentNode);
                     });
                 } else {
-                    prereqTapTimeout = setTimeout(function() {
-                        prereqTapTimeout = null;
-                        showNodeDetail(prereqNode);
+                    seqTapTimeout = setTimeout(function() {
+                        seqTapTimeout = null;
+                        showNodeDetail(seqNode);
                     }, tapDelay);
                 }
             });
