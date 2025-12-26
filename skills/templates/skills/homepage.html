@@ -263,15 +263,16 @@
             border-color: var(--color-action);
         }
 
-        /* Strudel preview - using strudel-editor component */
+        /* Strudel preview - iframe embed */
         .strudel-preview {
             width: 100%;
             height: 100%;
         }
 
-        .strudel-preview strudel-editor {
+        .strudel-preview iframe {
             width: 100%;
             height: 100%;
+            border: none;
         }
 
         /* LinkedIn AI Dashboard */
@@ -591,11 +592,13 @@
                 <div class="preview-container" data-preview-type="{{ tree.preview_type }}">
                     {% if tree.preview_type == 'strudel' %}
                     <div class="strudel-preview">
-                        <strudel-editor>
-<!--
-{{ tree.preview_config.pattern }}
--->
-                        </strudel-editor>
+                        <iframe 
+                            src="https://strudel.cc/#{{ tree.preview_config.pattern_base64 }}"
+                            width="100%" 
+                            height="100%" 
+                            frameborder="0"
+                            allow="autoplay"
+                        ></iframe>
                     </div>
                     {% else %}
                     <div class="linkedin-preview">
@@ -654,7 +657,6 @@
         {% endfor %}
     </div>
 
-    <script src="https://unpkg.com/@strudel/repl@latest"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Theme definitions
