@@ -271,17 +271,32 @@
             flex-direction: column;
         }
 
-        .strudel-code {
+        .strudel-editor {
             flex: 1;
-            padding: 20px;
-            font-family: 'courier new', monospace;
-            font-size: 13px;
-            color: var(--color-action);
+            padding: 15px;
             background: var(--bg-base);
-            overflow: hidden;
             display: flex;
-            align-items: center;
-            justify-content: center;
+        }
+
+        .strudel-textarea {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border-default);
+            color: var(--color-action);
+            font-family: 'courier new', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 12px;
+            resize: none;
+            outline: none;
+        }
+
+        .strudel-textarea:focus {
+            border-color: var(--color-action);
+        }
+
+        .strudel-textarea::placeholder {
+            color: var(--text-muted);
         }
 
         .strudel-controls {
@@ -362,63 +377,92 @@
             text-align: right;
         }
 
-        /* LinkedIn scraper animation */
+        /* LinkedIn AI Dashboard */
         .linkedin-preview {
             width: 100%;
             height: 100%;
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 200px;
             position: relative;
             overflow: hidden;
+            background: var(--bg-base);
         }
 
-        .linkedin-table {
-            flex: 1;
+        /* Left side: Counters + Lead cards */
+        .ai-main {
             display: flex;
             flex-direction: column;
             padding: 15px;
+            gap: 12px;
             overflow: hidden;
         }
 
-        .linkedin-header {
+        /* Counter dashboard */
+        .ai-counters {
             display: grid;
-            grid-template-columns: 50px 1fr 1fr 120px;
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            padding: 10px;
-            border-bottom: 1px solid var(--border-default);
-            color: var(--text-secondary);
-            font-size: 10px;
         }
 
-        .linkedin-rows {
+        .ai-counter {
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .ai-counter-value {
+            font-size: 22px;
+            color: var(--color-action);
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .ai-counter-label {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* Lead cards area */
+        .ai-leads {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             overflow: hidden;
-            position: relative;
         }
 
-        .linkedin-row {
+        .ai-lead-card {
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            padding: 12px;
             display: grid;
-            grid-template-columns: 50px 1fr 1fr 120px;
-            gap: 10px;
-            padding: 10px;
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--text-dim);
-            font-size: 11px;
+            grid-template-columns: 40px 1fr auto;
+            gap: 12px;
             align-items: center;
             opacity: 0;
-            transform: translateY(20px);
-            animation: rowSlideIn 0.5s ease forwards;
+            transform: translateX(-20px);
+            animation: leadSlideIn 0.4s ease forwards;
         }
 
-        @keyframes rowSlideIn {
+        @keyframes leadSlideIn {
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(0);
             }
         }
 
-        .linkedin-avatar {
-            width: 36px;
-            height: 36px;
+        .ai-lead-card.processing {
+            border-color: var(--color-action);
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+        }
+
+        .ai-lead-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--border-default);
             display: flex;
@@ -426,123 +470,155 @@
             justify-content: center;
             color: var(--text-muted);
             font-size: 14px;
+            font-weight: bold;
         }
 
-        .linkedin-row.highlight {
-            background: var(--color-action-bg);
-            color: var(--text-primary);
-        }
-
-        .linkedin-row.highlight .linkedin-avatar {
-            background: var(--color-action);
-            color: var(--bg-base);
-        }
-
-        .linkedin-faces {
-            width: 120px;
-            border-left: 1px solid var(--border-subtle);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .ai-lead-info {
             overflow: hidden;
         }
 
-        .face-card {
-            width: 90px;
-            height: 90px;
-            background: var(--bg-hover);
-            border: 1px solid var(--border-default);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transform: rotateY(90deg);
-            animation: faceFlip 0.4s ease forwards;
-        }
-
-        @keyframes faceFlip {
-            to {
-                opacity: 1;
-                transform: rotateY(0);
-            }
-        }
-
-        .face-icon {
-            font-size: 28px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-
-        .face-name {
-            font-size: 9px;
-            color: var(--text-dim);
-        }
-
-        /* Email composition overlay */
-        .email-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            background: var(--bg-raised);
-            border: 1px solid var(--border-default);
-            display: none;
-            flex-direction: column;
-        }
-
-        .email-overlay.active {
-            display: flex;
-            animation: emailSlideIn 0.3s ease;
-        }
-
-        @keyframes emailSlideIn {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        .email-header {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--text-secondary);
-            font-size: 11px;
-        }
-
-        .email-field {
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-subtle);
-            color: var(--text-dim);
-            font-size: 11px;
-        }
-
-        .email-field span {
-            color: var(--text-muted);
-        }
-
-        .email-body {
-            padding: 15px;
-            min-height: 100px;
-            color: var(--text-primary);
+        .ai-lead-name {
+            color: var(--text-bright);
             font-size: 12px;
-            line-height: 1.6;
+            margin-bottom: 2px;
         }
 
-        .email-body .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 14px;
+        .ai-lead-role {
+            color: var(--text-dim);
+            font-size: 10px;
+        }
+
+        .ai-lead-score {
+            text-align: right;
+        }
+
+        .ai-score-value {
+            color: var(--color-action);
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .ai-score-label {
+            color: var(--text-muted);
+            font-size: 8px;
+            text-transform: uppercase;
+        }
+
+        /* Confidence bars */
+        .ai-lead-bars {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            margin-top: 4px;
+        }
+
+        .ai-bar {
+            flex: 1;
+        }
+
+        .ai-bar-label {
+            font-size: 8px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .ai-bar-track {
+            height: 3px;
+            background: var(--border-default);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-bar-fill {
+            height: 100%;
             background: var(--color-action);
-            animation: blink 0.8s infinite;
-            vertical-align: middle;
-            margin-left: 2px;
+            width: 0%;
+            transition: width 0.8s ease;
+        }
+
+        .ai-bar-fill.intent {
+            background: #f0a020;
+        }
+
+        .ai-bar-fill.timing {
+            background: #5ccfe6;
+        }
+
+        /* Right side: AI Analysis terminal */
+        .ai-terminal {
+            border-left: 1px solid var(--border-subtle);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-raised);
+        }
+
+        .ai-terminal-header {
+            font-size: 9px;
+            color: var(--color-action);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .ai-pulse {
+            width: 6px;
+            height: 6px;
+            background: var(--color-action);
+            border-radius: 50%;
+            animation: aiPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes aiPulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .ai-terminal-log {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 9px;
+            font-family: 'courier new', monospace;
+        }
+
+        .ai-log-line {
+            color: var(--text-dim);
+            opacity: 0;
+            animation: logFadeIn 0.3s ease forwards;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ai-log-line.highlight {
+            color: var(--color-action);
+        }
+
+        .ai-log-line.warning {
+            color: #f0a020;
+        }
+
+        @keyframes logFadeIn {
+            to { opacity: 1; }
+        }
+
+        .ai-log-typing {
+            color: var(--color-action);
+        }
+
+        .ai-log-typing::after {
+            content: '_';
+            animation: blink 0.5s infinite;
         }
 
         @keyframes blink {
@@ -550,36 +626,46 @@
             51%, 100% { opacity: 0; }
         }
 
-        .email-send {
+        /* Telegram notification */
+        .tg-notify {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: var(--color-action);
-            border-radius: 50%;
+            bottom: 15px;
+            right: 15px;
+            background: #2AABEE;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 10px;
             display: none;
             align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--bg-base);
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(42, 171, 238, 0.3);
+            transform: translateY(20px);
+            opacity: 0;
         }
 
-        .email-send.active {
+        .tg-notify.active {
             display: flex;
-            animation: sendSwoosh 0.8s ease forwards;
+            animation: tgSlideIn 0.4s ease forwards;
         }
 
-        @keyframes sendSwoosh {
-            0% {
-                transform: translate(-50%, -50%) scale(1);
+        @keyframes tgSlideIn {
+            to {
+                transform: translateY(0);
                 opacity: 1;
             }
-            100% {
-                transform: translate(200%, -200%) scale(0.3);
-                opacity: 0;
-            }
+        }
+
+        .tg-icon {
+            font-size: 16px;
+        }
+
+        .tg-content {
+            line-height: 1.4;
+        }
+
+        .tg-title {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -608,11 +694,11 @@
                 <div class="preview-container" data-preview-type="{{ tree.preview_type }}">
                     {% if tree.preview_type == 'strudel' %}
                     <div class="strudel-preview">
-                        <div class="strudel-code">
-                            <code>{{ tree.preview_config.pattern }}</code>
+                        <div class="strudel-editor">
+                            <textarea class="strudel-textarea" spellcheck="false" placeholder="// type your pattern here...">{{ tree.preview_config.pattern }}</textarea>
                         </div>
                         <div class="strudel-controls">
-                            <button class="strudel-play" title="Play/Stop">&#9654;</button>
+                            <button class="strudel-play" title="Play/Stop (Ctrl+Enter)">&#9654;</button>
                             <div class="lpf-container">
                                 <span class="lpf-label">LPF</span>
                                 <input type="range" class="lpf-slider" min="100" max="5000" value="800">
@@ -622,23 +708,37 @@
                     </div>
                     {% else %}
                     <div class="linkedin-preview">
-                        <div class="linkedin-table">
-                            <div class="linkedin-header">
-                                <div></div>
-                                <div>Name</div>
-                                <div>Company</div>
-                                <div>Title</div>
+                        <div class="ai-main">
+                            <div class="ai-counters">
+                                <div class="ai-counter">
+                                    <div class="ai-counter-value" data-counter="found">0</div>
+                                    <div class="ai-counter-label">Found</div>
+                                </div>
+                                <div class="ai-counter">
+                                    <div class="ai-counter-value" data-counter="analyzed">0</div>
+                                    <div class="ai-counter-label">Analyzed</div>
+                                </div>
+                                <div class="ai-counter">
+                                    <div class="ai-counter-value" data-counter="qualified">0</div>
+                                    <div class="ai-counter-label">Qualified</div>
+                                </div>
                             </div>
-                            <div class="linkedin-rows"></div>
+                            <div class="ai-leads"></div>
                         </div>
-                        <div class="linkedin-faces"></div>
-                        <div class="email-overlay">
-                            <div class="email-header">New Message</div>
-                            <div class="email-field"><span>To:</span> <span class="email-to"></span></div>
-                            <div class="email-field"><span>Subject:</span> Quick question about your role</div>
-                            <div class="email-body"><span class="email-text"></span><span class="cursor"></span></div>
+                        <div class="ai-terminal">
+                            <div class="ai-terminal-header">
+                                <div class="ai-pulse"></div>
+                                AI Analysis
+                            </div>
+                            <div class="ai-terminal-log"></div>
                         </div>
-                        <div class="email-send">&#10148;</div>
+                        <div class="tg-notify">
+                            <div class="tg-icon">&#9993;</div>
+                            <div class="tg-content">
+                                <div class="tg-title">New Lead Alert</div>
+                                <div class="tg-text"></div>
+                            </div>
+                        </div>
                     </div>
                     {% endif %}
                 </div>
@@ -663,7 +763,7 @@
         {% endfor %}
     </div>
 
-    <script src="https://unpkg.com/@strudel/web@1.0.0/dist/index.js"></script>
+    <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Theme definitions
@@ -760,19 +860,28 @@
             }
 
             function updateNav() {
-                prevBtn.classList.toggle('disabled', currentIndex === 0);
-                nextBtn.classList.toggle('disabled', currentIndex === slides.length - 1);
+                // No disabled state - carousel is infinite
                 dots.forEach(function(dot, i) {
                     dot.classList.toggle('active', i === currentIndex);
                 });
             }
 
             prevBtn.addEventListener('click', function() {
-                if (currentIndex > 0) goToSlide(currentIndex - 1);
+                // Infinite loop: go to last slide if at first
+                if (currentIndex > 0) {
+                    goToSlide(currentIndex - 1);
+                } else {
+                    goToSlide(slides.length - 1);
+                }
             });
 
             nextBtn.addEventListener('click', function() {
-                if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+                // Infinite loop: go to first slide if at last
+                if (currentIndex < slides.length - 1) {
+                    goToSlide(currentIndex + 1);
+                } else {
+                    goToSlide(0);
+                }
             });
 
             dots.forEach(function(dot) {
@@ -781,12 +890,15 @@
                 });
             });
 
-            // Keyboard navigation
+            // Keyboard navigation (infinite loop)
             document.addEventListener('keydown', function(e) {
+                // Don't interfere if user is typing in textarea
+                if (e.target.tagName === 'TEXTAREA') return;
+                
                 if (e.key === 'ArrowLeft') {
-                    if (currentIndex > 0) goToSlide(currentIndex - 1);
+                    goToSlide(currentIndex > 0 ? currentIndex - 1 : slides.length - 1);
                 } else if (e.key === 'ArrowRight') {
-                    if (currentIndex < slides.length - 1) goToSlide(currentIndex + 1);
+                    goToSlide(currentIndex < slides.length - 1 ? currentIndex + 1 : 0);
                 }
             });
 
@@ -805,219 +917,297 @@
                 }, 50);
             });
 
-            // LinkedIn scraper animation
+            // LinkedIn AI Dashboard animation
             var linkedinPreviews = document.querySelectorAll('.linkedin-preview');
             
-            var fakeData = [
-                { name: 'Sarah Chen', company: 'Stripe', title: 'Product Lead' },
-                { name: 'Marcus Weber', company: 'Notion', title: 'Engineering Manager' },
-                { name: 'Elena Volkov', company: 'Figma', title: 'Design Director' },
-                { name: 'James Okafor', company: 'Linear', title: 'Head of Growth' },
-                { name: 'Lisa Nakamura', company: 'Vercel', title: 'Solutions Architect' },
-                { name: 'David Kim', company: 'Supabase', title: 'Developer Advocate' },
-                { name: 'Anna Bergström', company: 'Klarna', title: 'VP Engineering' },
-                { name: 'Tom Richards', company: 'Intercom', title: 'Sales Director' },
-                { name: 'Maya Patel', company: 'Retool', title: 'Product Manager' },
-                { name: 'Chris Mueller', company: 'Datadog', title: 'Site Reliability' }
+            var fakeLeads = [
+                { name: 'Sarah Chen', company: 'Stripe', title: 'Product Lead', score: 94, relevance: 92, intent: 78, timing: 85 },
+                { name: 'Marcus Weber', company: 'Notion', title: 'Engineering Manager', score: 87, relevance: 85, intent: 82, timing: 71 },
+                { name: 'Elena Volkov', company: 'Figma', title: 'Design Director', score: 91, relevance: 88, intent: 91, timing: 68 },
+                { name: 'James Okafor', company: 'Linear', title: 'Head of Growth', score: 96, relevance: 94, intent: 89, timing: 92 },
+                { name: 'Lisa Nakamura', company: 'Vercel', title: 'Solutions Architect', score: 83, relevance: 79, intent: 72, timing: 88 },
+                { name: 'David Kim', company: 'Supabase', title: 'Developer Advocate', score: 78, relevance: 81, intent: 65, timing: 74 },
+                { name: 'Anna Bergström', company: 'Klarna', title: 'VP Engineering', score: 89, relevance: 86, intent: 84, timing: 79 },
+                { name: 'Tom Richards', company: 'Intercom', title: 'Sales Director', score: 92, relevance: 90, intent: 88, timing: 81 }
             ];
 
-            var emailText = "Hi there!\n\nI noticed your work at {{company}} and would love to connect. I'm building something that might be relevant to your team.\n\nWould you have 15 minutes for a quick chat this week?";
+            var aiLogMessages = [
+                { text: 'scanning linkedin profile...', type: 'normal' },
+                { text: 'extracting role data...', type: 'normal' },
+                { text: 'analyzing company stage...', type: 'normal' },
+                { text: 'checking recent activity...', type: 'normal' },
+                { text: 'computing relevance score...', type: 'normal' },
+                { text: 'match confidence: HIGH', type: 'highlight' },
+                { text: 'intent signals detected', type: 'warning' },
+                { text: 'recommended: priority outreach', type: 'highlight' },
+                { text: 'queuing for notification...', type: 'normal' },
+                { text: 'telegram alert sent', type: 'highlight' }
+            ];
 
             linkedinPreviews.forEach(function(preview) {
-                var rowsContainer = preview.querySelector('.linkedin-rows');
-                var facesContainer = preview.querySelector('.linkedin-faces');
-                var emailOverlay = preview.querySelector('.email-overlay');
-                var emailTo = preview.querySelector('.email-to');
-                var emailTextEl = preview.querySelector('.email-text');
-                var emailSend = preview.querySelector('.email-send');
+                var leadsContainer = preview.querySelector('.ai-leads');
+                var terminalLog = preview.querySelector('.ai-terminal-log');
+                var tgNotify = preview.querySelector('.tg-notify');
+                var tgText = preview.querySelector('.tg-text');
+                var counterFound = preview.querySelector('[data-counter="found"]');
+                var counterAnalyzed = preview.querySelector('[data-counter="analyzed"]');
+                var counterQualified = preview.querySelector('[data-counter="qualified"]');
                 
-                if (!rowsContainer) return;
+                if (!leadsContainer) return;
 
-                var rowIndex = 0;
-                var faceIndex = 0;
-                var animationPhase = 'scrolling';
-                var highlightedPerson = null;
+                var leadIndex = 0;
+                var found = 0;
+                var analyzed = 0;
+                var qualified = 0;
+                var logIndex = 0;
 
                 function getInitials(name) {
-                    return name.split(' ').map(n => n[0]).join('');
+                    return name.split(' ').map(function(n) { return n[0]; }).join('');
                 }
 
-                function addRow() {
-                    if (rowIndex >= fakeData.length) {
-                        rowIndex = 0;
-                        rowsContainer.innerHTML = '';
-                    }
-                    
-                    var person = fakeData[rowIndex];
-                    var row = document.createElement('div');
-                    row.className = 'linkedin-row';
-                    row.style.animationDelay = '0s';
-                    row.innerHTML = `
-                        <div class="linkedin-avatar">${getInitials(person.name)}</div>
-                        <div>${person.name}</div>
-                        <div>${person.company}</div>
-                        <div>${person.title}</div>
-                    `;
-                    rowsContainer.appendChild(row);
-                    
-                    // Remove old rows
-                    while (rowsContainer.children.length > 6) {
-                        rowsContainer.removeChild(rowsContainer.firstChild);
-                    }
-                    
-                    rowIndex++;
-                }
-
-                function addFace() {
-                    if (faceIndex >= 4) return;
-                    
-                    var person = fakeData[faceIndex % fakeData.length];
-                    var face = document.createElement('div');
-                    face.className = 'face-card';
-                    face.style.animationDelay = '0s';
-                    face.innerHTML = `
-                        <div class="face-icon">${getInitials(person.name)}</div>
-                        <div class="face-name">${person.name.split(' ')[0]}</div>
-                    `;
-                    facesContainer.appendChild(face);
-                    faceIndex++;
-                }
-
-                function highlightRow() {
-                    var rows = rowsContainer.querySelectorAll('.linkedin-row');
-                    if (rows.length > 2) {
-                        var targetRow = rows[Math.floor(rows.length / 2)];
-                        targetRow.classList.add('highlight');
-                        highlightedPerson = fakeData[(rowIndex - Math.ceil(rows.length / 2)) % fakeData.length];
+                function animateCounter(el, target) {
+                    var current = parseInt(el.textContent) || 0;
+                    if (current < target) {
+                        el.textContent = current + 1;
                     }
                 }
 
-                function showEmail() {
-                    if (!highlightedPerson) highlightedPerson = fakeData[0];
-                    emailTo.textContent = highlightedPerson.name.toLowerCase().replace(' ', '.') + '@' + highlightedPerson.company.toLowerCase() + '.com';
-                    emailOverlay.classList.add('active');
+                function addLogLine(msg) {
+                    var line = document.createElement('div');
+                    line.className = 'ai-log-line';
+                    if (msg.type === 'highlight') line.classList.add('highlight');
+                    if (msg.type === 'warning') line.classList.add('warning');
+                    line.textContent = '> ' + msg.text;
+                    terminalLog.appendChild(line);
                     
-                    var text = emailText.replace('{{company}}', highlightedPerson.company);
-                    var charIndex = 0;
-                    
-                    function typeChar() {
-                        if (charIndex < text.length) {
-                            emailTextEl.textContent += text[charIndex];
-                            charIndex++;
-                            setTimeout(typeChar, 30 + Math.random() * 20);
-                        } else {
-                            setTimeout(sendEmail, 800);
-                        }
+                    // Keep only last 12 lines
+                    while (terminalLog.children.length > 12) {
+                        terminalLog.removeChild(terminalLog.firstChild);
                     }
-                    typeChar();
+                    
+                    // Scroll to bottom
+                    terminalLog.scrollTop = terminalLog.scrollHeight;
                 }
 
-                function sendEmail() {
-                    emailOverlay.classList.remove('active');
-                    emailSend.classList.add('active');
+                function addLeadCard(lead) {
+                    var card = document.createElement('div');
+                    card.className = 'ai-lead-card';
+                    card.innerHTML = 
+                        '<div class="ai-lead-avatar">' + getInitials(lead.name) + '</div>' +
+                        '<div class="ai-lead-info">' +
+                            '<div class="ai-lead-name">' + lead.name + '</div>' +
+                            '<div class="ai-lead-role">' + lead.title + ' @ ' + lead.company + '</div>' +
+                        '</div>' +
+                        '<div class="ai-lead-score">' +
+                            '<div class="ai-score-value">' + lead.score + '%</div>' +
+                            '<div class="ai-score-label">match</div>' +
+                        '</div>' +
+                        '<div class="ai-lead-bars">' +
+                            '<div class="ai-bar">' +
+                                '<div class="ai-bar-label"><span>Relevance</span><span>' + lead.relevance + '%</span></div>' +
+                                '<div class="ai-bar-track"><div class="ai-bar-fill" style="width: 0%"></div></div>' +
+                            '</div>' +
+                            '<div class="ai-bar">' +
+                                '<div class="ai-bar-label"><span>Intent</span><span>' + lead.intent + '%</span></div>' +
+                                '<div class="ai-bar-track"><div class="ai-bar-fill intent" style="width: 0%"></div></div>' +
+                            '</div>' +
+                            '<div class="ai-bar">' +
+                                '<div class="ai-bar-label"><span>Timing</span><span>' + lead.timing + '%</span></div>' +
+                                '<div class="ai-bar-track"><div class="ai-bar-fill timing" style="width: 0%"></div></div>' +
+                            '</div>' +
+                        '</div>';
+                    
+                    leadsContainer.appendChild(card);
+                    
+                    // Animate bars after card appears
+                    setTimeout(function() {
+                        card.classList.add('processing');
+                        var bars = card.querySelectorAll('.ai-bar-fill');
+                        bars[0].style.width = lead.relevance + '%';
+                        bars[1].style.width = lead.intent + '%';
+                        bars[2].style.width = lead.timing + '%';
+                    }, 100);
+                    
+                    // Remove processing state
+                    setTimeout(function() {
+                        card.classList.remove('processing');
+                    }, 1200);
+                    
+                    // Keep only last 3 cards
+                    while (leadsContainer.children.length > 3) {
+                        leadsContainer.removeChild(leadsContainer.firstChild);
+                    }
+                }
+
+                function showTelegramNotification(lead) {
+                    tgText.textContent = lead.name + ' - ' + lead.score + '% match';
+                    tgNotify.classList.add('active');
                     
                     setTimeout(function() {
-                        emailSend.classList.remove('active');
-                        resetAnimation();
-                    }, 1000);
+                        tgNotify.classList.remove('active');
+                    }, 2500);
+                }
+
+                function processNextLead() {
+                    if (leadIndex >= fakeLeads.length) {
+                        leadIndex = 0;
+                    }
+                    
+                    var lead = fakeLeads[leadIndex];
+                    
+                    // Increment found counter
+                    found += Math.floor(Math.random() * 3) + 1;
+                    animateCounter(counterFound, found);
+                    
+                    // Add lead card
+                    addLeadCard(lead);
+                    
+                    // Log AI analysis
+                    var logSequence = [0, 1, 2, 3, 4];
+                    if (lead.score > 85) logSequence.push(5, 6, 7);
+                    if (lead.score > 90) logSequence.push(8, 9);
+                    
+                    var logDelay = 0;
+                    logSequence.forEach(function(idx) {
+                        setTimeout(function() {
+                            addLogLine(aiLogMessages[idx]);
+                        }, logDelay);
+                        logDelay += 150 + Math.random() * 100;
+                    });
+                    
+                    // Update analyzed counter
+                    setTimeout(function() {
+                        analyzed++;
+                        animateCounter(counterAnalyzed, analyzed);
+                    }, 800);
+                    
+                    // Update qualified counter and show notification for high scores
+                    if (lead.score > 85) {
+                        setTimeout(function() {
+                            qualified++;
+                            animateCounter(counterQualified, qualified);
+                            showTelegramNotification(lead);
+                        }, 1500);
+                    }
+                    
+                    leadIndex++;
                 }
 
                 function resetAnimation() {
-                    rowsContainer.innerHTML = '';
-                    facesContainer.innerHTML = '';
-                    emailTextEl.textContent = '';
-                    rowIndex = 0;
-                    faceIndex = 0;
-                    animationPhase = 'scrolling';
-                    highlightedPerson = null;
-                    startAnimation();
+                    leadsContainer.innerHTML = '';
+                    terminalLog.innerHTML = '';
+                    leadIndex = 0;
+                    found = 0;
+                    analyzed = 0;
+                    qualified = 0;
+                    counterFound.textContent = '0';
+                    counterAnalyzed.textContent = '0';
+                    counterQualified.textContent = '0';
                 }
 
-                function startAnimation() {
-                    // Phase 1: Scroll rows (3 seconds)
-                    var rowInterval = setInterval(function() {
-                        addRow();
-                    }, 400);
+                // Initial log message
+                addLogLine({ text: 'initializing lead sentinel...', type: 'highlight' });
+                setTimeout(function() {
+                    addLogLine({ text: 'connected to linkedin api', type: 'normal' });
+                }, 500);
+                setTimeout(function() {
+                    addLogLine({ text: 'ai model loaded', type: 'highlight' });
+                }, 1000);
 
-                    // Phase 2: Add faces (starting at 1.5s)
+                // Process leads every 2.5 seconds
+                setTimeout(function() {
+                    processNextLead();
+                    setInterval(processNextLead, 2500);
+                }, 1500);
+                
+                // Reset every 25 seconds
+                setInterval(function() {
+                    resetAnimation();
+                    addLogLine({ text: 'cycle complete, restarting...', type: 'highlight' });
                     setTimeout(function() {
-                        var faceInterval = setInterval(function() {
-                            addFace();
-                            if (faceIndex >= 4) clearInterval(faceInterval);
-                        }, 300);
-                    }, 1500);
-
-                    // Phase 3: Highlight a row (at 3s)
-                    setTimeout(function() {
-                        clearInterval(rowInterval);
-                        highlightRow();
-                        animationPhase = 'highlight';
-                    }, 3000);
-
-                    // Phase 4: Show email (at 4s)
-                    setTimeout(function() {
-                        showEmail();
-                        animationPhase = 'email';
-                    }, 4000);
-                }
-
-                // Start animation
-                startAnimation();
+                        addLogLine({ text: 'initializing lead sentinel...', type: 'highlight' });
+                    }, 500);
+                }, 25000);
             });
 
             // Strudel audio integration
+            // Initialize Strudel globally
+            if (typeof initStrudel === 'function') {
+                initStrudel();
+            }
+            
             var strudelPreviews = document.querySelectorAll('.strudel-preview');
             
             strudelPreviews.forEach(function(preview) {
                 var playBtn = preview.querySelector('.strudel-play');
                 var lpfSlider = preview.querySelector('.lpf-slider');
                 var lpfValue = preview.querySelector('.lpf-value');
-                var codeEl = preview.querySelector('code');
-                var pattern = codeEl ? codeEl.textContent : '';
+                var textarea = preview.querySelector('.strudel-textarea');
                 var isPlaying = false;
-                var repl = null;
 
-                lpfSlider.addEventListener('input', function() {
-                    lpfValue.textContent = this.value + ' Hz';
-                    // Update pattern with new LPF value if playing
-                    if (repl && isPlaying) {
-                        try {
-                            var newPattern = pattern.replace(/\.lpf\(\d+\)/, '.lpf(' + this.value + ')');
-                            repl.evaluate(newPattern);
-                        } catch(e) {
-                            console.log('LPF update error:', e);
-                        }
+                function getCurrentPattern() {
+                    var code = textarea.value;
+                    var lpfVal = lpfSlider.value;
+                    // Replace existing lpf or append it
+                    if (code.match(/\.lpf\(\d+\)/)) {
+                        return code.replace(/\.lpf\(\d+\)/, '.lpf(' + lpfVal + ')');
+                    } else {
+                        return code + '.lpf(' + lpfVal + ')';
                     }
-                });
+                }
 
-                playBtn.addEventListener('click', async function() {
-                    if (!window.strudel) {
+                function playPattern() {
+                    if (typeof sound === 'undefined') {
                         console.log('Strudel not loaded yet');
                         return;
                     }
 
+                    try {
+                        hush();
+                        eval(getCurrentPattern() + '.play()');
+                        isPlaying = true;
+                        playBtn.innerHTML = '&#9632;';
+                        playBtn.classList.add('playing');
+                    } catch(e) {
+                        console.log('Strudel error:', e);
+                    }
+                }
+
+                function stopPattern() {
+                    hush();
+                    isPlaying = false;
+                    playBtn.innerHTML = '&#9654;';
+                    playBtn.classList.remove('playing');
+                }
+
+                lpfSlider.addEventListener('input', function() {
+                    lpfValue.textContent = this.value + ' Hz';
+                    // If playing, restart with new LPF value
+                    if (isPlaying) {
+                        playPattern();
+                    }
+                });
+
+                playBtn.addEventListener('click', function() {
                     if (!isPlaying) {
-                        try {
-                            if (!repl) {
-                                repl = await window.strudel.repl({
-                                    defaultOutput: window.strudel.webaudio
-                                });
-                            }
-                            var currentPattern = pattern.replace(/\.lpf\(\d+\)/, '.lpf(' + lpfSlider.value + ')');
-                            await repl.evaluate(currentPattern);
-                            isPlaying = true;
-                            playBtn.innerHTML = '&#9632;';
-                            playBtn.classList.add('playing');
-                        } catch(e) {
-                            console.log('Strudel error:', e);
-                        }
+                        playPattern();
                     } else {
-                        if (repl) {
-                            repl.stop();
+                        stopPattern();
+                    }
+                });
+
+                // Ctrl+Enter to play
+                textarea.addEventListener('keydown', function(e) {
+                    if (e.ctrlKey && e.key === 'Enter') {
+                        e.preventDefault();
+                        if (isPlaying) {
+                            stopPattern();
                         }
-                        isPlaying = false;
-                        playBtn.innerHTML = '&#9654;';
-                        playBtn.classList.remove('playing');
+                        playPattern();
+                    }
+                    // Escape to stop
+                    if (e.key === 'Escape') {
+                        stopPattern();
                     }
                 });
             });

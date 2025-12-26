@@ -45,7 +45,8 @@ def compute_dfs_sequence(nodes, goal_node):
 
 def homepage(request):
     """Homepage with carousel of all skill trees."""
-    trees = Tree.objects.all()
+    # Order: strudel previews first, then animations
+    trees = Tree.objects.all().order_by('-preview_type')
     trees_data = []
     for t in trees:
         trees_data.append({
