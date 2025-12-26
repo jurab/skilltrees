@@ -844,50 +844,107 @@
                 });
             });
 
-            // Carousel navigation
+            // Carousel navigation with infinite scroll
             var carousel = document.getElementById('carousel');
-            var slides = document.querySelectorAll('.slide');
+            var originalSlides = Array.from(document.querySelectorAll('.slide'));
             var dots = document.querySelectorAll('.dot');
             var prevBtn = document.getElementById('nav-prev');
             var nextBtn = document.getElementById('nav-next');
+            var numSlides = originalSlides.length;
             var currentIndex = 0;
+            var isAnimating = false;
 
-            function goToSlide(index, instant) {
-                if (index < 0 || index >= slides.length) return;
+            // Clone first and last slides for infinite effect
+            if (numSlides > 1) {
+                var firstClone = originalSlides[0].cloneNode(true);
+                var lastClone = originalSlides[numSlides - 1].cloneNode(true);
+                firstClone.classList.add('clone');
+                lastClone.classList.add('clone');
+                carousel.appendChild(firstClone);
+                carousel.insertBefore(lastClone, originalSlides[0]);
+            }
+
+            var allSlides = Array.from(carousel.querySelectorAll('.slide'));
+            
+            // Start at real first slide (index 1 because of prepended clone)
+            function initPosition() {
+                if (numSlides > 1) {
+                    carousel.scrollLeft = window.innerWidth; // Skip the prepended clone
+                }
+            }
+            initPosition();
+
+            function goToSlide(index) {
+                if (isAnimating) return;
                 currentIndex = index;
-                slides[index].scrollIntoView({ 
-                    behavior: instant ? 'instant' : 'smooth', 
-                    inline: 'start' 
-                });
+                // Account for prepended clone: real slides start at index 1
+                var targetSlide = allSlides[index + 1];
+                if (targetSlide) {
+                    targetSlide.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+                }
                 updateNav();
             }
 
+            function goNext() {
+                if (isAnimating) return;
+                isAnimating = true;
+                
+                // Scroll to next position (including clone at end)
+                var targetIndex = currentIndex + 2; // +1 for prepended clone, +1 for next
+                if (targetIndex < allSlides.length) {
+                    allSlides[targetIndex].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+                }
+                
+                currentIndex++;
+                if (currentIndex >= numSlides) {
+                    currentIndex = 0;
+                }
+                updateNav();
+                
+                // After animation, teleport if we hit the clone
+                setTimeout(function() {
+                    if (currentIndex === 0) {
+                        // We scrolled to the first clone, teleport to real first
+                        carousel.scrollLeft = window.innerWidth;
+                    }
+                    isAnimating = false;
+                }, 400);
+            }
+
+            function goPrev() {
+                if (isAnimating) return;
+                isAnimating = true;
+                
+                // Scroll to prev position (including clone at start)
+                var targetIndex = currentIndex; // prepended clone shifts everything by 1
+                if (targetIndex >= 0) {
+                    allSlides[targetIndex].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+                }
+                
+                currentIndex--;
+                if (currentIndex < 0) {
+                    currentIndex = numSlides - 1;
+                }
+                updateNav();
+                
+                // After animation, teleport if we hit the clone
+                setTimeout(function() {
+                    if (currentIndex === numSlides - 1) {
+                        // We scrolled to the last clone, teleport to real last
+                        carousel.scrollLeft = window.innerWidth * numSlides;
+                    }
+                    isAnimating = false;
+                }, 400);
+            }
+
             function updateNav() {
-                // No disabled state - carousel is infinite
                 dots.forEach(function(dot, i) {
                     dot.classList.toggle('active', i === currentIndex);
                 });
             }
 
-            prevBtn.addEventListener('click', function() {
-                // Infinite loop: go to last slide if at first
-                if (currentIndex > 0) {
-                    goToSlide(currentIndex - 1);
-                } else {
-                    // Wrap around - use instant scroll
-                    goToSlide(slides.length - 1, true);
-                }
-            });
-
-            nextBtn.addEventListener('click', function() {
-                // Infinite loop: go to first slide if at last
-                if (currentIndex < slides.length - 1) {
-                    goToSlide(currentIndex + 1);
-                } else {
-                    // Wrap around - use instant scroll
-                    goToSlide(0, true);
-                }
-            });
+            prevBtn.addEventListener('click', goPrev);
+            nextBtn.addEventListener('click', goNext);
 
             dots.forEach(function(dot) {
                 dot.addEventListener('click', function() {
@@ -895,34 +952,30 @@
                 });
             });
 
-            // Keyboard navigation (infinite loop)
+            // Keyboard navigation
             document.addEventListener('keydown', function(e) {
-                // Don't interfere if user is typing in textarea
                 if (e.target.tagName === 'TEXTAREA') return;
                 
                 if (e.key === 'ArrowLeft') {
-                    if (currentIndex > 0) {
-                        goToSlide(currentIndex - 1);
-                    } else {
-                        goToSlide(slides.length - 1, true);
-                    }
+                    goPrev();
                 } else if (e.key === 'ArrowRight') {
-                    if (currentIndex < slides.length - 1) {
-                        goToSlide(currentIndex + 1);
-                    } else {
-                        goToSlide(0, true);
-                    }
+                    goNext();
                 }
             });
 
-            // Detect scroll position for dot sync
+            // Sync dots with manual scroll
             var scrollTimeout;
             carousel.addEventListener('scroll', function() {
+                if (isAnimating) return;
                 clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(function() {
                     var scrollLeft = carousel.scrollLeft;
                     var slideWidth = window.innerWidth;
-                    var newIndex = Math.round(scrollLeft / slideWidth);
+                    var rawIndex = Math.round(scrollLeft / slideWidth);
+                    // Adjust for prepended clone
+                    var newIndex = rawIndex - 1;
+                    if (newIndex < 0) newIndex = numSlides - 1;
+                    if (newIndex >= numSlides) newIndex = 0;
                     if (newIndex !== currentIndex) {
                         currentIndex = newIndex;
                         updateNav();
