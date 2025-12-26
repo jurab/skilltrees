@@ -6,8 +6,83 @@
     <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
     <script src="https://cytoscape.org/cytoscape.js-dagre/cytoscape-dagre.js"></script>
     <style>
+        /* Theme: Default (dark hacker) */
+        :root {
+            --bg-base: #050505;
+            --bg-raised: #0a0a0a;
+            --bg-hover: #111;
+            --border-subtle: #1a1a1a;
+            --border-default: #222;
+            --border-hover: #444;
+            --text-muted: #444;
+            --text-dim: #555;
+            --text-secondary: #666;
+            --text-primary: #888;
+            --text-bright: #aaa;
+            --color-action: #00ff88;
+            --color-action-bg: rgba(0, 255, 136, 0.05);
+            --color-danger: #ff4444;
+        }
+        
+        /* Theme: Claude (warm terracotta)
+        :root {
+            --bg-base: #1a1915;
+            --bg-raised: #23211c;
+            --bg-hover: #2d2a24;
+            --border-subtle: #3d3930;
+            --border-default: #4a453a;
+            --border-hover: #6b6355;
+            --text-muted: #6b6355;
+            --text-dim: #8b8070;
+            --text-secondary: #a69a88;
+            --text-primary: #c4b59d;
+            --text-bright: #e8dcc8;
+            --color-action: #da7756;
+            --color-action-bg: rgba(218, 119, 86, 0.08);
+            --color-danger: #e63946;
+        }
+        */
+        
+        /* Theme: Ocean (deep blue)
+        :root {
+            --bg-base: #0a0e14;
+            --bg-raised: #0d1219;
+            --bg-hover: #141b24;
+            --border-subtle: #1a2433;
+            --border-default: #243044;
+            --border-hover: #3a4d66;
+            --text-muted: #3a4d66;
+            --text-dim: #4a6080;
+            --text-secondary: #6b8aad;
+            --text-primary: #8aa8c7;
+            --text-bright: #b8d4f0;
+            --color-action: #5ccfe6;
+            --color-action-bg: rgba(92, 207, 230, 0.08);
+            --color-danger: #ff6b6b;
+        }
+        */
+        
+        /* Theme: Amber (warm dark)
+        :root {
+            --bg-base: #0f0d09;
+            --bg-raised: #1a1610;
+            --bg-hover: #252015;
+            --border-subtle: #2d2618;
+            --border-default: #3d3420;
+            --border-hover: #5c4d30;
+            --text-muted: #5c4d30;
+            --text-dim: #7a6840;
+            --text-secondary: #a08850;
+            --text-primary: #c4a860;
+            --text-bright: #e8d090;
+            --color-action: #f0a020;
+            --color-action-bg: rgba(240, 160, 32, 0.08);
+            --color-danger: #e05040;
+        }
+        */
+        
         body {
-            background: #050505;
+            background: var(--bg-base);
             margin: 0;
             overflow-x: scroll;
             overflow-y: hidden;
@@ -24,14 +99,73 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 11px;
             z-index: 10;
             line-height: 1.6;
             pointer-events: none;
         }
         .ui b {
-            color: #aaa;
+            color: var(--text-bright);
+        }
+        
+        /* Settings */
+        #settings-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 24px;
+            height: 24px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            z-index: 60;
+        }
+        #settings-toggle:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+        }
+        #settings-panel {
+            display: none;
+            position: fixed;
+            top: 54px;
+            left: 20px;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            padding: 15px;
+            z-index: 60;
+            min-width: 150px;
+        }
+        #settings-panel.active {
+            display: block;
+        }
+        #settings-panel h3 {
+            color: var(--text-bright);
+            font-size: 11px;
+            font-weight: normal;
+            margin: 0 0 10px 0;
+        }
+        .theme-option {
+            display: block;
+            padding: 8px 10px;
+            color: var(--text-dim);
+            font-size: 11px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            margin-bottom: 4px;
+        }
+        .theme-option:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .theme-option.active {
+            border-color: var(--color-action);
+            color: var(--color-action);
         }
 
         /* Sidebar */
@@ -41,8 +175,8 @@
             right: 0;
             bottom: 15px;
             width: 250px;
-            background: #0a0a0a;
-            border-left: 1px solid #1a1a1a;
+            background: var(--bg-raised);
+            border-left: 1px solid var(--border-subtle);
             z-index: 50;
             display: flex;
             flex-direction: column;
@@ -57,9 +191,9 @@
             right: 260px;
             width: 24px;
             height: 24px;
-            background: #0a0a0a;
-            border: 1px solid #222;
-            color: #666;
+            background: var(--bg-raised);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -69,20 +203,20 @@
             transition: right 0.3s ease;
         }
         #sidebar-toggle:hover {
-            border-color: #444;
-            color: #888;
+            border-color: var(--border-hover);
+            color: var(--text-primary);
         }
         #sidebar.collapsed ~ #sidebar-toggle {
             right: 10px;
         }
         #sidebar-header {
             padding: 20px;
-            border-bottom: 1px solid #1a1a1a;
-            color: #666;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
             font-size: 11px;
         }
         #sidebar-header b {
-            color: #aaa;
+            color: var(--text-bright);
         }
         #sidebar-list {
             flex: 1;
@@ -91,7 +225,7 @@
         }
         .sidebar-item {
             padding: 10px 20px;
-            color: #555;
+            color: var(--text-dim);
             font-size: 11px;
             cursor: pointer;
             display: flex;
@@ -99,7 +233,7 @@
             gap: 10px;
         }
         .sidebar-item:hover {
-            background: #111;
+            background: var(--bg-hover);
         }
         .sidebar-item.done {
             opacity: 0.6;
@@ -112,15 +246,19 @@
         }
         .sidebar-item.ignored {
             opacity: 0.4;
-            color: #ff4444;
+            color: var(--color-danger);
         }
         .sidebar-item.next {
-            color: #00ff88;
-            background: rgba(0, 255, 136, 0.05);
+            color: var(--color-action);
+            background: var(--color-action-bg);
         }
         .sidebar-item .checkmark {
             display: none;
-            color: #00ff88;
+            color: var(--color-action);
+        }
+        .sidebar-item.highlight {
+            background: var(--bg-hover);
+            color: var(--text-bright);
         }
 
         /* Node detail overlay */
@@ -145,13 +283,13 @@
             position: absolute;
             top: 20px;
             right: 30px;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 24px;
             cursor: pointer;
             z-index: 101;
         }
         #node-detail-close:hover {
-            color: #aaa;
+            color: var(--text-bright);
         }
         #node-detail-main {
             flex: 1;
@@ -166,63 +304,63 @@
             margin-bottom: 15px;
         }
         #node-detail-title {
-            color: #aaa;
+            color: var(--text-bright);
             font-size: 18px;
             text-align: center;
             flex: 1;
         }
         #node-detail-ignore {
             background: transparent;
-            border: 1px solid #ff4444;
-            color: #ff4444;
+            border: 1px solid var(--color-danger);
+            color: var(--color-danger);
             padding: 8px 16px;
             font-family: 'courier new', monospace;
             font-size: 11px;
             cursor: pointer;
         }
         #node-detail-ignore:hover {
-            background: #ff4444;
-            color: #050505;
+            background: var(--color-danger);
+            color: var(--bg-base);
         }
         #node-detail-ignore.is-ignored {
-            border-color: #666;
-            color: #666;
+            border-color: var(--text-secondary);
+            color: var(--text-secondary);
         }
         #node-detail-ignore.is-ignored:hover {
-            background: #666;
-            color: #050505;
+            background: var(--text-secondary);
+            color: var(--bg-base);
         }
         #node-detail-complete {
             background: transparent;
-            border: 1px solid #00ff88;
-            color: #00ff88;
+            border: 1px solid var(--color-action);
+            color: var(--color-action);
             padding: 8px 16px;
             font-family: 'courier new', monospace;
             font-size: 11px;
             cursor: pointer;
         }
         #node-detail-complete:hover {
-            background: #00ff88;
-            color: #050505;
+            background: var(--color-action);
+            color: var(--bg-base);
         }
         #node-detail-complete.is-done {
-            border-color: #666;
-            color: #666;
+            border-color: var(--text-secondary);
+            color: var(--text-secondary);
         }
         #node-detail-complete.is-done:hover {
-            background: #666;
-            color: #050505;
+            background: var(--text-secondary);
+            color: var(--bg-base);
         }
         #node-detail-video {
             width: 100%;
             aspect-ratio: 16/9;
-            background: #111;
-            border: 1px solid #222;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-default);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #444;
+            color: var(--text-muted);
         }
         #node-detail-video iframe {
             width: 100%;
@@ -238,21 +376,21 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #666;
+            color: var(--text-secondary);
             font-size: 12px;
             padding: 10px 15px;
-            border: 1px solid #222;
+            border: 1px solid var(--border-default);
             cursor: pointer;
         }
         .resource-item:hover {
-            border-color: #444;
-            color: #888;
+            border-color: var(--border-hover);
+            color: var(--text-primary);
         }
         .resource-icon {
             font-size: 16px;
         }
         #node-detail-description {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 13px;
             line-height: 1.8;
         }
@@ -262,7 +400,7 @@
             padding-top: 50px;
         }
         #node-detail-prerequisites h3 {
-            color: #666;
+            color: var(--text-secondary);
             font-size: 12px;
             font-weight: normal;
             margin-bottom: 15px;
@@ -273,27 +411,35 @@
             gap: 8px;
         }
         .prereq-item {
-            color: #555;
+            color: var(--text-dim);
             font-size: 11px;
             padding: 8px 12px;
-            border: 1px solid #222;
+            border: 1px solid var(--border-default);
             cursor: pointer;
         }
         .prereq-item:hover {
-            border-color: #444;
-            color: #888;
+            border-color: var(--border-hover);
+            color: var(--text-primary);
         }
         .prereq-item.done {
             opacity: 0.4;
         }
         .prereq-item.ignored {
             opacity: 0.4;
-            border-color: #ff4444;
+            border-color: var(--color-danger);
         }
     </style>
 </head>
 <body>
-    <div class="ui">
+    <div id="settings-toggle">&#9881;</div>
+    <div id="settings-panel">
+        <h3>theme</h3>
+        <div class="theme-option active" data-theme="default">default</div>
+        <div class="theme-option" data-theme="claude">claude</div>
+        <div class="theme-option" data-theme="ocean">ocean</div>
+        <div class="theme-option" data-theme="amber">amber</div>
+    </div>
+    <div class="ui" style="left: 55px;">
         <b>{{ tree.title }}</b><br>
         TAP: view skill<br>
         DBL-TAP: mark as DONE
@@ -332,6 +478,50 @@
         document.addEventListener('DOMContentLoaded', function() {
             var sequence = {{ sequence_json|safe }};
 
+            // Theme definitions
+            var themes = {
+                default: {
+                    '--bg-base': '#050505', '--bg-raised': '#0a0a0a', '--bg-hover': '#111',
+                    '--border-subtle': '#1a1a1a', '--border-default': '#222', '--border-hover': '#444',
+                    '--text-muted': '#444', '--text-dim': '#555', '--text-secondary': '#666',
+                    '--text-primary': '#888', '--text-bright': '#aaa',
+                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444'
+                },
+                claude: {
+                    '--bg-base': '#1a1915', '--bg-raised': '#23211c', '--bg-hover': '#2d2a24',
+                    '--border-subtle': '#3d3930', '--border-default': '#4a453a', '--border-hover': '#6b6355',
+                    '--text-muted': '#6b6355', '--text-dim': '#8b8070', '--text-secondary': '#a69a88',
+                    '--text-primary': '#c4b59d', '--text-bright': '#e8dcc8',
+                    '--color-action': '#da7756', '--color-action-bg': 'rgba(218, 119, 86, 0.08)', '--color-danger': '#e63946'
+                },
+                ocean: {
+                    '--bg-base': '#0a0e14', '--bg-raised': '#0d1219', '--bg-hover': '#141b24',
+                    '--border-subtle': '#1a2433', '--border-default': '#243044', '--border-hover': '#3a4d66',
+                    '--text-muted': '#3a4d66', '--text-dim': '#4a6080', '--text-secondary': '#6b8aad',
+                    '--text-primary': '#8aa8c7', '--text-bright': '#b8d4f0',
+                    '--color-action': '#5ccfe6', '--color-action-bg': 'rgba(92, 207, 230, 0.08)', '--color-danger': '#ff6b6b'
+                },
+                amber: {
+                    '--bg-base': '#0f0d09', '--bg-raised': '#1a1610', '--bg-hover': '#252015',
+                    '--border-subtle': '#2d2618', '--border-default': '#3d3420', '--border-hover': '#5c4d30',
+                    '--text-muted': '#5c4d30', '--text-dim': '#7a6840', '--text-secondary': '#a08850',
+                    '--text-primary': '#c4a860', '--text-bright': '#e8d090',
+                    '--color-action': '#f0a020', '--color-action-bg': 'rgba(240, 160, 32, 0.08)', '--color-danger': '#e05040'
+                }
+            };
+
+            // Get CSS variable values for Cytoscape
+            var style = getComputedStyle(document.documentElement);
+            var colors = {
+                bgBase: style.getPropertyValue('--bg-base').trim(),
+                borderSubtle: style.getPropertyValue('--border-subtle').trim(),
+                borderDefault: style.getPropertyValue('--border-default').trim(),
+                textPrimary: style.getPropertyValue('--text-primary').trim(),
+                textBright: style.getPropertyValue('--text-bright').trim(),
+                colorAction: style.getPropertyValue('--color-action').trim(),
+                colorDanger: style.getPropertyValue('--color-danger').trim()
+            };
+
             var cy = cytoscape({
                 container: document.getElementById('cy'),
                 elements: {{ elements_json|safe }},
@@ -339,9 +529,9 @@
                     {
                         selector: 'node',
                         style: {
-                            'background-color': '#050505',
+                            'background-color': colors.bgBase,
                             'label': 'data(name)',
-                            'color': '#888',
+                            'color': colors.textPrimary,
                             'font-family': 'monospace',
                             'font-size': '10px',
                             'text-valign': 'center',
@@ -349,7 +539,7 @@
                             'width': '140px',
                             'height': '35px',
                             'border-width': 1,
-                            'border-color': '#222',
+                            'border-color': colors.borderDefault,
                             'shape': 'round-rectangle',
                             'transition-property': 'background-color, border-color, color, opacity',
                             'transition-duration': '0.3s'
@@ -359,8 +549,8 @@
                         selector: 'edge',
                         style: {
                             'width': 1,
-                            'line-color': '#1a1a1a',
-                            'target-arrow-color': '#1a1a1a',
+                            'line-color': colors.borderSubtle,
+                            'target-arrow-color': colors.borderSubtle,
                             'target-arrow-shape': 'triangle',
                             'curve-style': 'bezier'
                         }
@@ -369,7 +559,8 @@
                         selector: '.done',
                         style: {
                             'opacity': 0.6,
-                            'label': function(ele) { return '✓ ' + ele.data('name'); }
+                            'label': function(ele) { return '✓  ' + ele.data('name'); },
+                            'color': colors.colorAction
                         }
                     },
                     {
@@ -382,15 +573,22 @@
                         selector: '.ignored',
                         style: {
                             'opacity': 0.4,
-                            'border-color': '#ff4444',
-                            'color': '#ff4444'
+                            'border-color': colors.colorDanger,
+                            'color': colors.colorDanger
                         }
                     },
                     {
                         selector: '.next',
                         style: {
-                            'border-color': '#00ff88',
-                            'color': '#00ff88',
+                            'border-color': colors.colorAction,
+                            'color': colors.colorAction,
+                            'border-width': 2
+                        }
+                    },
+                    {
+                        selector: '.highlight',
+                        style: {
+                            'border-color': colors.textBright,
                             'border-width': 2
                         }
                     }
@@ -636,7 +834,7 @@
                 nodeDetailPrereqList.innerHTML = '';
 
                 if (ancestors.length === 0) {
-                    nodeDetailPrereqList.innerHTML = '<span style="color:#444;font-size:11px;">none</span>';
+                    nodeDetailPrereqList.innerHTML = '<span style="color:var(--text-muted);font-size:11px;">none</span>';
                 } else {
                     // Sort by distance from current node (closest first)
                     var ancestorList = ancestors.toArray().reverse();
@@ -674,6 +872,51 @@
                     tapTimeout = null;
                     showNodeDetail(tappedNode);
                 }, tapDelay);
+            });
+
+            // Highlight sync - hovering highlights all nodes/items with same skill
+            function highlightSkill(skillId) {
+                // Highlight graph nodes
+                cy.nodes().forEach(function(node) {
+                    if (node.data('skill_id') === skillId) {
+                        node.addClass('highlight');
+                    }
+                });
+                // Highlight sidebar items
+                document.querySelectorAll('.sidebar-item').forEach(function(item) {
+                    if (parseInt(item.dataset.skillId) === skillId) {
+                        item.classList.add('highlight');
+                    }
+                });
+            }
+            
+            function clearHighlight() {
+                cy.nodes().removeClass('highlight');
+                document.querySelectorAll('.sidebar-item').forEach(function(item) {
+                    item.classList.remove('highlight');
+                });
+            }
+
+            // Sidebar hover
+            sidebarList.addEventListener('mouseover', function(e) {
+                var item = e.target.closest('.sidebar-item');
+                if (!item) return;
+                var skillId = parseInt(item.dataset.skillId);
+                highlightSkill(skillId);
+            });
+            sidebarList.addEventListener('mouseout', function(e) {
+                var item = e.target.closest('.sidebar-item');
+                if (!item) return;
+                clearHighlight();
+            });
+
+            // Graph node hover
+            cy.on('mouseover', 'node', function(evt) {
+                var skillId = evt.target.data('skill_id');
+                highlightSkill(skillId);
+            });
+            cy.on('mouseout', 'node', function(evt) {
+                clearHighlight();
             });
 
             // Sidebar click handling
@@ -780,6 +1023,72 @@
                 var scrollSpeed = 0.3;
                 window.scrollBy(e.deltaX * scrollSpeed, e.deltaY * scrollSpeed);
             }, { passive: false });
+
+            // Settings panel
+            var settingsToggle = document.getElementById('settings-toggle');
+            var settingsPanel = document.getElementById('settings-panel');
+            
+            settingsToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                settingsPanel.classList.toggle('active');
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!settingsPanel.contains(e.target) && e.target !== settingsToggle) {
+                    settingsPanel.classList.remove('active');
+                }
+            });
+
+            // Theme switching
+            function applyTheme(themeName) {
+                var theme = themes[themeName];
+                if (!theme) return;
+                
+                var root = document.documentElement;
+                for (var prop in theme) {
+                    root.style.setProperty(prop, theme[prop]);
+                }
+                
+                // Update Cytoscape colors
+                colors.bgBase = theme['--bg-base'];
+                colors.borderSubtle = theme['--border-subtle'];
+                colors.borderDefault = theme['--border-default'];
+                colors.textPrimary = theme['--text-primary'];
+                colors.textBright = theme['--text-bright'];
+                colors.colorAction = theme['--color-action'];
+                colors.colorDanger = theme['--color-danger'];
+                
+                // Update Cytoscape styles
+                cy.style()
+                    .selector('node').style({ 'background-color': colors.bgBase, 'color': colors.textPrimary, 'border-color': colors.borderDefault })
+                    .selector('edge').style({ 'line-color': colors.borderSubtle, 'target-arrow-color': colors.borderSubtle })
+                    .selector('.done').style({ 'color': colors.colorAction })
+                    .selector('.ignored').style({ 'border-color': colors.colorDanger, 'color': colors.colorDanger })
+                    .selector('.next').style({ 'border-color': colors.colorAction, 'color': colors.colorAction })
+                    .selector('.highlight').style({ 'border-color': colors.textBright })
+                    .update();
+                
+                // Save preference
+                localStorage.setItem('skilltrees-theme', themeName);
+                
+                // Update active state
+                document.querySelectorAll('.theme-option').forEach(function(opt) {
+                    opt.classList.toggle('active', opt.dataset.theme === themeName);
+                });
+            }
+
+            // Theme option clicks
+            document.querySelectorAll('.theme-option').forEach(function(opt) {
+                opt.addEventListener('click', function() {
+                    applyTheme(this.dataset.theme);
+                });
+            });
+
+            // Load saved theme
+            var savedTheme = localStorage.getItem('skilltrees-theme');
+            if (savedTheme && themes[savedTheme]) {
+                applyTheme(savedTheme);
+            }
         });
     </script>
 </body>
