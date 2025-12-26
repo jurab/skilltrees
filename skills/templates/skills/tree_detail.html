@@ -22,6 +22,7 @@
             --color-action: #00ff88;
             --color-action-bg: rgba(0, 255, 136, 0.05);
             --color-danger: #ff4444;
+            --bg-overlay: rgba(5, 5, 5, 0.95);
         }
         
         /* Theme: Claude (warm terracotta)
@@ -40,6 +41,7 @@
             --color-action: #da7756;
             --color-action-bg: rgba(218, 119, 86, 0.08);
             --color-danger: #e63946;
+            --bg-overlay: rgba(26, 25, 21, 0.95);
         }
         */
         
@@ -59,6 +61,7 @@
             --color-action: #5ccfe6;
             --color-action-bg: rgba(92, 207, 230, 0.08);
             --color-danger: #ff6b6b;
+            --bg-overlay: rgba(10, 14, 20, 0.95);
         }
         */
         
@@ -78,6 +81,7 @@
             --color-action: #f0a020;
             --color-action-bg: rgba(240, 160, 32, 0.08);
             --color-danger: #e05040;
+            --bg-overlay: rgba(15, 13, 9, 0.95);
         }
         */
         
@@ -97,6 +101,7 @@
             --color-action: #10b981;
             --color-action-bg: rgba(16, 185, 129, 0.08);
             --color-danger: #ef4444;
+            --bg-overlay: rgba(255, 255, 255, 0.95);
         }
         */
         
@@ -288,7 +293,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
+            background: var(--bg-overlay);
             z-index: 100;
         }
         #node-detail.active {
@@ -564,35 +569,40 @@
                     '--border-subtle': '#1a1a1a', '--border-default': '#222', '--border-hover': '#444',
                     '--text-muted': '#444', '--text-dim': '#555', '--text-secondary': '#666',
                     '--text-primary': '#888', '--text-bright': '#aaa',
-                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444'
+                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444',
+                    '--bg-overlay': 'rgba(5, 5, 5, 0.95)'
                 },
                 claude: {
                     '--bg-base': '#1a1915', '--bg-raised': '#23211c', '--bg-hover': '#2d2a24',
                     '--border-subtle': '#3d3930', '--border-default': '#4a453a', '--border-hover': '#6b6355',
                     '--text-muted': '#6b6355', '--text-dim': '#8b8070', '--text-secondary': '#a69a88',
                     '--text-primary': '#c4b59d', '--text-bright': '#e8dcc8',
-                    '--color-action': '#da7756', '--color-action-bg': 'rgba(218, 119, 86, 0.08)', '--color-danger': '#e63946'
+                    '--color-action': '#da7756', '--color-action-bg': 'rgba(218, 119, 86, 0.08)', '--color-danger': '#e63946',
+                    '--bg-overlay': 'rgba(26, 25, 21, 0.95)'
                 },
                 ocean: {
                     '--bg-base': '#0a0e14', '--bg-raised': '#0d1219', '--bg-hover': '#141b24',
                     '--border-subtle': '#1a2433', '--border-default': '#243044', '--border-hover': '#3a4d66',
                     '--text-muted': '#3a4d66', '--text-dim': '#4a6080', '--text-secondary': '#6b8aad',
                     '--text-primary': '#8aa8c7', '--text-bright': '#b8d4f0',
-                    '--color-action': '#5ccfe6', '--color-action-bg': 'rgba(92, 207, 230, 0.08)', '--color-danger': '#ff6b6b'
+                    '--color-action': '#5ccfe6', '--color-action-bg': 'rgba(92, 207, 230, 0.08)', '--color-danger': '#ff6b6b',
+                    '--bg-overlay': 'rgba(10, 14, 20, 0.95)'
                 },
                 amber: {
                     '--bg-base': '#0f0d09', '--bg-raised': '#1a1610', '--bg-hover': '#252015',
                     '--border-subtle': '#2d2618', '--border-default': '#3d3420', '--border-hover': '#5c4d30',
                     '--text-muted': '#5c4d30', '--text-dim': '#7a6840', '--text-secondary': '#a08850',
                     '--text-primary': '#c4a860', '--text-bright': '#e8d090',
-                    '--color-action': '#f0a020', '--color-action-bg': 'rgba(240, 160, 32, 0.08)', '--color-danger': '#e05040'
+                    '--color-action': '#f0a020', '--color-action-bg': 'rgba(240, 160, 32, 0.08)', '--color-danger': '#e05040',
+                    '--bg-overlay': 'rgba(15, 13, 9, 0.95)'
                 },
                 flashbang: {
                     '--bg-base': '#ffffff', '--bg-raised': '#f5f5f5', '--bg-hover': '#ebebeb',
                     '--border-subtle': '#e0e0e0', '--border-default': '#d0d0d0', '--border-hover': '#a0a0a0',
                     '--text-muted': '#c0c0c0', '--text-dim': '#a0a0a0', '--text-secondary': '#707070',
                     '--text-primary': '#505050', '--text-bright': '#202020',
-                    '--color-action': '#10b981', '--color-action-bg': 'rgba(16, 185, 129, 0.08)', '--color-danger': '#ef4444'
+                    '--color-action': '#10b981', '--color-action-bg': 'rgba(16, 185, 129, 0.08)', '--color-danger': '#ef4444',
+                    '--bg-overlay': 'rgba(255, 255, 255, 0.95)'
                 }
             };
 
