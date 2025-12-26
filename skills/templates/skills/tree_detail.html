@@ -561,6 +561,79 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var sequence = {{ sequence_json|safe }};
+            var isAuthenticated = {{ is_authenticated|yesno:"true,false" }};
+            var treeId = {{ tree.id }};
+
+            // LocalStorage helpers for unauthenticated users
+            function getStorageKey() {
+                return 'skilltrees-progress-' + treeId;
+            }
+
+            function getLocalProgress() {
+                var stored = localStorage.getItem(getStorageKey());
+                if (!stored) {
+                    return { completed: [], ignored: [] };
+                }
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    return { completed: [], ignored: [] };
+                }
+            }
+
+            function saveLocalProgress(progress) {
+                localStorage.setItem(getStorageKey(), JSON.stringify(progress));
+            }
+
+            function isSkillCompleted(skillId) {
+                var progress = getLocalProgress();
+                return progress.completed.indexOf(skillId) !== -1;
+            }
+
+            function isSkillIgnored(skillId) {
+                var progress = getLocalProgress();
+                return progress.ignored.indexOf(skillId) !== -1;
+            }
+
+            function toggleLocalCompletion(skillId) {
+                var progress = getLocalProgress();
+                var idx = progress.completed.indexOf(skillId);
+                var done;
+                if (idx !== -1) {
+                    progress.completed.splice(idx, 1);
+                    done = false;
+                } else {
+                    progress.completed.push(skillId);
+                    // Remove from ignored if completing
+                    var ignoredIdx = progress.ignored.indexOf(skillId);
+                    if (ignoredIdx !== -1) {
+                        progress.ignored.splice(ignoredIdx, 1);
+                    }
+                    done = true;
+                }
+                saveLocalProgress(progress);
+                return done;
+            }
+
+            function toggleLocalIgnore(skillId) {
+                var progress = getLocalProgress();
+                var idx = progress.ignored.indexOf(skillId);
+                var ignored;
+                if (idx !== -1) {
+                    progress.ignored.splice(idx, 1);
+                    ignored = false;
+                } else {
+                    progress.ignored.push(skillId);
+                    // Remove from completed if ignoring
+                    var completedIdx = progress.completed.indexOf(skillId);
+                    if (completedIdx !== -1) {
+                        progress.completed.splice(completedIdx, 1);
+                    }
+                    ignored = true;
+                }
+                saveLocalProgress(progress);
+                return ignored;
+            }
 
             // Theme definitions
             var themes = {
@@ -741,7 +814,24 @@
                 fitGraph();
             }, 100);
 
-            // Apply initial states from server
+            // Apply initial states from server or localStorage
+            if (!isAuthenticated) {
+                // For unauthenticated users, load progress from localStorage
+                var localProgress = getLocalProgress();
+                cy.nodes().forEach(function(node) {
+                    var skillId = node.data('skill_id');
+                    var isDone = localProgress.completed.indexOf(skillId) !== -1;
+                    var isIgnored = localProgress.ignored.indexOf(skillId) !== -1;
+                    node.data('done', isDone);
+                    node.data('ignored', isIgnored);
+                });
+                // Update sequence data too
+                sequence.forEach(function(item) {
+                    item.done = localProgress.completed.indexOf(item.skill_id) !== -1;
+                    item.ignored = localProgress.ignored.indexOf(item.skill_id) !== -1;
+                });
+            }
+
             cy.nodes().forEach(function(node) {
                 if (node.data('ignored')) {
                     node.addClass('ignored');
@@ -753,6 +843,14 @@
                     node.addClass('skipped');
                 }
             });
+
+            // Recalculate states after loading localStorage (for unauthenticated users)
+            if (!isAuthenticated) {
+                // We need updateStates but it's defined later, so we'll call it after sidebar setup
+                setTimeout(function() {
+                    updateStates();
+                }, 0);
+            }
 
             // Sidebar
             var sidebar = document.getElementById('sidebar');
@@ -864,7 +962,24 @@
             }
 
             function toggleNodeCompletion(nodeId, callback) {
-                // Extract numeric id from 'n123' format
+                var node = cy.getElementById(nodeId);
+                var skillId = node.data('skill_id');
+
+                if (!isAuthenticated) {
+                    // Use localStorage for unauthenticated users
+                    var done = toggleLocalCompletion(skillId);
+                    cy.nodes().forEach(function(n) {
+                        if (n.data('skill_id') === skillId) {
+                            n.data('done', done);
+                            if (done) n.data('ignored', false);
+                        }
+                    });
+                    updateStates();
+                    if (callback) callback({ skill_id: skillId, done: done });
+                    return;
+                }
+
+                // Authenticated: use server API
                 var numericId = nodeId.replace('n', '');
                 fetch('/node/' + numericId + '/toggle/', {
                     method: 'POST',
@@ -892,6 +1007,24 @@
             }
 
             function toggleNodeIgnore(nodeId, callback) {
+                var node = cy.getElementById(nodeId);
+                var skillId = node.data('skill_id');
+
+                if (!isAuthenticated) {
+                    // Use localStorage for unauthenticated users
+                    var ignored = toggleLocalIgnore(skillId);
+                    cy.nodes().forEach(function(n) {
+                        if (n.data('skill_id') === skillId) {
+                            n.data('ignored', ignored);
+                            if (ignored) n.data('done', false);
+                        }
+                    });
+                    updateStates();
+                    if (callback) callback({ skill_id: skillId, ignored: ignored });
+                    return;
+                }
+
+                // Authenticated: use server API
                 var numericId = nodeId.replace('n', '');
                 fetch('/node/' + numericId + '/ignore/', {
                     method: 'POST',

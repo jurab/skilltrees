@@ -189,6 +189,7 @@ def tree_detail(request, pk):
         'tree': tree,
         'elements_json': json.dumps(elements),
         'sequence_json': json.dumps(sequence_data),
+        'is_authenticated': request.user.is_authenticated,
     }
     return render(request, 'skills/tree_detail.html', context)
 
