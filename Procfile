@@ -1,0 +1,1 @@
+web: gunicorn skilltrees.wsgi
