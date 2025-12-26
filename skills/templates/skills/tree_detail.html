@@ -6,26 +6,7 @@
     <script src="https://unpkg.com/dagre@0.7.4/dist/dagre.js"></script>
     <script src="https://cytoscape.org/cytoscape.js-dagre/cytoscape-dagre.js"></script>
     <style>
-        /* Theme: Default (dark hacker) */
-        :root {
-            --bg-base: #050505;
-            --bg-raised: #0a0a0a;
-            --bg-hover: #111;
-            --border-subtle: #1a1a1a;
-            --border-default: #222;
-            --border-hover: #444;
-            --text-muted: #444;
-            --text-dim: #555;
-            --text-secondary: #666;
-            --text-primary: #888;
-            --text-bright: #aaa;
-            --color-action: #00ff88;
-            --color-action-bg: rgba(0, 255, 136, 0.05);
-            --color-danger: #ff4444;
-            --bg-overlay: rgba(5, 5, 5, 0.95);
-        }
-        
-        /* Theme: Claude (warm terracotta)
+        /* Theme: Claude (warm terracotta) - DEFAULT */
         :root {
             --bg-base: #1a1915;
             --bg-raised: #23211c;
@@ -42,6 +23,25 @@
             --color-action-bg: rgba(218, 119, 86, 0.08);
             --color-danger: #e63946;
             --bg-overlay: rgba(26, 25, 21, 0.95);
+        }
+        
+        /* Theme: Matrix (dark hacker)
+        :root {
+            --bg-base: #050505;
+            --bg-raised: #0a0a0a;
+            --bg-hover: #111;
+            --border-subtle: #1a1a1a;
+            --border-default: #222;
+            --border-hover: #444;
+            --text-muted: #444;
+            --text-dim: #555;
+            --text-secondary: #666;
+            --text-primary: #888;
+            --text-bright: #aaa;
+            --color-action: #00ff88;
+            --color-action-bg: rgba(0, 255, 136, 0.05);
+            --color-danger: #ff4444;
+            --bg-overlay: rgba(5, 5, 5, 0.95);
         }
         */
         
@@ -515,8 +515,8 @@
     <div id="settings-toggle">&#9881;</div>
     <div id="settings-panel">
         <h3>theme</h3>
-        <div class="theme-option active" data-theme="default">default</div>
-        <div class="theme-option" data-theme="claude">claude</div>
+        <div class="theme-option active" data-theme="claude">claude</div>
+        <div class="theme-option" data-theme="matrix">matrix</div>
         <div class="theme-option" data-theme="ocean">ocean</div>
         <div class="theme-option" data-theme="amber">amber</div>
         <div class="theme-option" data-theme="flashbang">flashbang</div>
@@ -564,14 +564,6 @@
 
             // Theme definitions
             var themes = {
-                default: {
-                    '--bg-base': '#050505', '--bg-raised': '#0a0a0a', '--bg-hover': '#111',
-                    '--border-subtle': '#1a1a1a', '--border-default': '#222', '--border-hover': '#444',
-                    '--text-muted': '#444', '--text-dim': '#555', '--text-secondary': '#666',
-                    '--text-primary': '#888', '--text-bright': '#aaa',
-                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444',
-                    '--bg-overlay': 'rgba(5, 5, 5, 0.95)'
-                },
                 claude: {
                     '--bg-base': '#1a1915', '--bg-raised': '#23211c', '--bg-hover': '#2d2a24',
                     '--border-subtle': '#3d3930', '--border-default': '#4a453a', '--border-hover': '#6b6355',
@@ -579,6 +571,14 @@
                     '--text-primary': '#c4b59d', '--text-bright': '#e8dcc8',
                     '--color-action': '#da7756', '--color-action-bg': 'rgba(218, 119, 86, 0.08)', '--color-danger': '#e63946',
                     '--bg-overlay': 'rgba(26, 25, 21, 0.95)'
+                },
+                matrix: {
+                    '--bg-base': '#050505', '--bg-raised': '#0a0a0a', '--bg-hover': '#111',
+                    '--border-subtle': '#1a1a1a', '--border-default': '#222', '--border-hover': '#444',
+                    '--text-muted': '#444', '--text-dim': '#555', '--text-secondary': '#666',
+                    '--text-primary': '#888', '--text-bright': '#aaa',
+                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444',
+                    '--bg-overlay': 'rgba(5, 5, 5, 0.95)'
                 },
                 ocean: {
                     '--bg-base': '#0a0e14', '--bg-raised': '#0d1219', '--bg-hover': '#141b24',

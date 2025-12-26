@@ -3,22 +3,22 @@
 <head>
     <title>comamkurvadelat.cz</title>
     <style>
-        /* Theme: Default (dark hacker) */
+        /* Theme: Claude (warm terracotta) - DEFAULT */
         :root {
-            --bg-base: #050505;
-            --bg-raised: #0a0a0a;
-            --bg-hover: #111;
-            --border-subtle: #1a1a1a;
-            --border-default: #222;
-            --border-hover: #444;
-            --text-muted: #444;
-            --text-dim: #555;
-            --text-secondary: #666;
-            --text-primary: #888;
-            --text-bright: #aaa;
-            --color-action: #00ff88;
-            --color-action-bg: rgba(0, 255, 136, 0.05);
-            --color-danger: #ff4444;
+            --bg-base: #1a1915;
+            --bg-raised: #23211c;
+            --bg-hover: #2d2a24;
+            --border-subtle: #3d3930;
+            --border-default: #4a453a;
+            --border-hover: #6b6355;
+            --text-muted: #6b6355;
+            --text-dim: #8b8070;
+            --text-secondary: #a69a88;
+            --text-primary: #c4b59d;
+            --text-bright: #e8dcc8;
+            --color-action: #da7756;
+            --color-action-bg: rgba(218, 119, 86, 0.08);
+            --color-danger: #e63946;
         }
 
         * {
@@ -677,8 +677,8 @@
 
     <div id="settings-panel">
         <h3>theme</h3>
-        <div class="theme-option active" data-theme="default">default</div>
-        <div class="theme-option" data-theme="claude">claude</div>
+        <div class="theme-option active" data-theme="claude">claude</div>
+        <div class="theme-option" data-theme="matrix">matrix</div>
         <div class="theme-option" data-theme="ocean">ocean</div>
         <div class="theme-option" data-theme="amber">amber</div>
         <div class="theme-option" data-theme="flashbang">flashbang</div>
@@ -768,19 +768,19 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Theme definitions
             var themes = {
-                default: {
-                    '--bg-base': '#050505', '--bg-raised': '#0a0a0a', '--bg-hover': '#111',
-                    '--border-subtle': '#1a1a1a', '--border-default': '#222', '--border-hover': '#444',
-                    '--text-muted': '#444', '--text-dim': '#555', '--text-secondary': '#666',
-                    '--text-primary': '#888', '--text-bright': '#aaa',
-                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444'
-                },
                 claude: {
                     '--bg-base': '#1a1915', '--bg-raised': '#23211c', '--bg-hover': '#2d2a24',
                     '--border-subtle': '#3d3930', '--border-default': '#4a453a', '--border-hover': '#6b6355',
                     '--text-muted': '#6b6355', '--text-dim': '#8b8070', '--text-secondary': '#a69a88',
                     '--text-primary': '#c4b59d', '--text-bright': '#e8dcc8',
                     '--color-action': '#da7756', '--color-action-bg': 'rgba(218, 119, 86, 0.08)', '--color-danger': '#e63946'
+                },
+                matrix: {
+                    '--bg-base': '#050505', '--bg-raised': '#0a0a0a', '--bg-hover': '#111',
+                    '--border-subtle': '#1a1a1a', '--border-default': '#222', '--border-hover': '#444',
+                    '--text-muted': '#444', '--text-dim': '#555', '--text-secondary': '#666',
+                    '--text-primary': '#888', '--text-bright': '#aaa',
+                    '--color-action': '#00ff88', '--color-action-bg': 'rgba(0, 255, 136, 0.05)', '--color-danger': '#ff4444'
                 },
                 ocean: {
                     '--bg-base': '#0a0e14', '--bg-raised': '#0d1219', '--bg-hover': '#141b24',
@@ -820,7 +820,7 @@
             }
 
             // Load saved theme
-            var savedTheme = localStorage.getItem('skilltrees-theme') || 'default';
+            var savedTheme = localStorage.getItem('skilltrees-theme') || 'claude';
             applyTheme(savedTheme);
 
             // Settings panel
@@ -852,10 +852,13 @@
             var nextBtn = document.getElementById('nav-next');
             var currentIndex = 0;
 
-            function goToSlide(index) {
+            function goToSlide(index, instant) {
                 if (index < 0 || index >= slides.length) return;
                 currentIndex = index;
-                slides[index].scrollIntoView({ behavior: 'smooth', inline: 'start' });
+                slides[index].scrollIntoView({ 
+                    behavior: instant ? 'instant' : 'smooth', 
+                    inline: 'start' 
+                });
                 updateNav();
             }
 
@@ -871,7 +874,8 @@
                 if (currentIndex > 0) {
                     goToSlide(currentIndex - 1);
                 } else {
-                    goToSlide(slides.length - 1);
+                    // Wrap around - use instant scroll
+                    goToSlide(slides.length - 1, true);
                 }
             });
 
@@ -880,7 +884,8 @@
                 if (currentIndex < slides.length - 1) {
                     goToSlide(currentIndex + 1);
                 } else {
-                    goToSlide(0);
+                    // Wrap around - use instant scroll
+                    goToSlide(0, true);
                 }
             });
 
@@ -896,9 +901,17 @@
                 if (e.target.tagName === 'TEXTAREA') return;
                 
                 if (e.key === 'ArrowLeft') {
-                    goToSlide(currentIndex > 0 ? currentIndex - 1 : slides.length - 1);
+                    if (currentIndex > 0) {
+                        goToSlide(currentIndex - 1);
+                    } else {
+                        goToSlide(slides.length - 1, true);
+                    }
                 } else if (e.key === 'ArrowRight') {
-                    goToSlide(currentIndex < slides.length - 1 ? currentIndex + 1 : 0);
+                    if (currentIndex < slides.length - 1) {
+                        goToSlide(currentIndex + 1);
+                    } else {
+                        goToSlide(0, true);
+                    }
                 }
             });
 
