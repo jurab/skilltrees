@@ -81,6 +81,25 @@
         }
         */
         
+        /* Theme: Flashbang (clean white)
+        :root {
+            --bg-base: #ffffff;
+            --bg-raised: #f5f5f5;
+            --bg-hover: #ebebeb;
+            --border-subtle: #e0e0e0;
+            --border-default: #d0d0d0;
+            --border-hover: #a0a0a0;
+            --text-muted: #c0c0c0;
+            --text-dim: #a0a0a0;
+            --text-secondary: #707070;
+            --text-primary: #505050;
+            --text-bright: #202020;
+            --color-action: #10b981;
+            --color-action-bg: rgba(16, 185, 129, 0.08);
+            --color-danger: #ef4444;
+        }
+        */
+        
         body {
             background: var(--bg-base);
             margin: 0;
@@ -438,6 +457,7 @@
         <div class="theme-option" data-theme="claude">claude</div>
         <div class="theme-option" data-theme="ocean">ocean</div>
         <div class="theme-option" data-theme="amber">amber</div>
+        <div class="theme-option" data-theme="flashbang">flashbang</div>
     </div>
     <div class="ui" style="left: 55px;">
         <b>{{ tree.title }}</b><br>
@@ -507,6 +527,13 @@
                     '--text-muted': '#5c4d30', '--text-dim': '#7a6840', '--text-secondary': '#a08850',
                     '--text-primary': '#c4a860', '--text-bright': '#e8d090',
                     '--color-action': '#f0a020', '--color-action-bg': 'rgba(240, 160, 32, 0.08)', '--color-danger': '#e05040'
+                },
+                flashbang: {
+                    '--bg-base': '#ffffff', '--bg-raised': '#f5f5f5', '--bg-hover': '#ebebeb',
+                    '--border-subtle': '#e0e0e0', '--border-default': '#d0d0d0', '--border-hover': '#a0a0a0',
+                    '--text-muted': '#c0c0c0', '--text-dim': '#a0a0a0', '--text-secondary': '#707070',
+                    '--text-primary': '#505050', '--text-bright': '#202020',
+                    '--color-action': '#10b981', '--color-action-bg': 'rgba(16, 185, 129, 0.08)', '--color-danger': '#ef4444'
                 }
             };
 
