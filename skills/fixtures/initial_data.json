@@ -1,0 +1,815 @@
+[
+{
+  "model": "skills.skill",
+  "pk": 1,
+  "fields": {
+    "title": "n8n basics",
+    "video_url": "https://www.youtube.com/embed/MDvlO9q6qWk",
+    "text": "# n8n basics\n\nPlaceholder content for n8n basics.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.411Z",
+    "updated_at": "2025-12-26T10:30:13.845Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 2,
+  "fields": {
+    "title": "setup botfather",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# setup botfather\n\nPlaceholder content for setup botfather.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.412Z",
+    "updated_at": "2025-12-25T14:39:33.412Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 3,
+  "fields": {
+    "title": "botfather",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# botfather\n\nPlaceholder content for botfather.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.413Z",
+    "updated_at": "2025-12-25T14:39:33.413Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 4,
+  "fields": {
+    "title": "web basics",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# web basics\n\nPlaceholder content for web basics.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.413Z",
+    "updated_at": "2025-12-25T14:39:33.413Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 5,
+  "fields": {
+    "title": "telegram - n8n",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# telegram - n8n\n\nPlaceholder content for telegram - n8n.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.414Z",
+    "updated_at": "2025-12-25T14:39:33.414Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 6,
+  "fields": {
+    "title": "data basics",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# data basics\n\nPlaceholder content for data basics.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.415Z",
+    "updated_at": "2025-12-25T14:39:33.415Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 7,
+  "fields": {
+    "title": "db basics",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# db basics\n\nPlaceholder content for db basics.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.415Z",
+    "updated_at": "2025-12-25T14:39:33.415Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 8,
+  "fields": {
+    "title": "setup airtable",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# setup airtable\n\nPlaceholder content for setup airtable.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.416Z",
+    "updated_at": "2025-12-25T14:39:33.416Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 9,
+  "fields": {
+    "title": "read/write n8n",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# read/write n8n\n\nPlaceholder content for read/write n8n.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.416Z",
+    "updated_at": "2025-12-25T14:39:33.416Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 10,
+  "fields": {
+    "title": "airtable - n8n",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# airtable - n8n\n\nPlaceholder content for airtable - n8n.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.417Z",
+    "updated_at": "2025-12-25T14:39:33.417Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 11,
+  "fields": {
+    "title": "setup actors",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# setup actors\n\nPlaceholder content for setup actors.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.418Z",
+    "updated_at": "2025-12-25T14:39:33.418Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 12,
+  "fields": {
+    "title": "actors",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# actors\n\nPlaceholder content for actors.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.419Z",
+    "updated_at": "2025-12-25T14:39:33.419Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 13,
+  "fields": {
+    "title": "pull to n8n",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# pull to n8n\n\nPlaceholder content for pull to n8n.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.420Z",
+    "updated_at": "2025-12-25T14:39:33.420Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 14,
+  "fields": {
+    "title": "apify - n8n",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# apify - n8n\n\nPlaceholder content for apify - n8n.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.420Z",
+    "updated_at": "2025-12-25T14:39:33.420Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 15,
+  "fields": {
+    "title": "ai intro",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# ai intro\n\nPlaceholder content for ai intro.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.421Z",
+    "updated_at": "2025-12-25T14:39:33.421Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 16,
+  "fields": {
+    "title": "prompting",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# prompting\n\nPlaceholder content for prompting.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.421Z",
+    "updated_at": "2025-12-25T14:39:33.421Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 17,
+  "fields": {
+    "title": "agentic",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# agentic\n\nPlaceholder content for agentic.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.422Z",
+    "updated_at": "2025-12-25T14:39:33.422Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 18,
+  "fields": {
+    "title": "implement a tool",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# implement a tool\n\nPlaceholder content for implement a tool.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.423Z",
+    "updated_at": "2025-12-25T14:39:33.423Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 19,
+  "fields": {
+    "title": "AI - n8n",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# AI - n8n\n\nPlaceholder content for AI - n8n.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.423Z",
+    "updated_at": "2025-12-25T14:39:33.423Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.skill",
+  "pk": 20,
+  "fields": {
+    "title": "leads sentinel - n8n",
+    "video_url": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "text": "# leads sentinel - n8n\n\nPlaceholder content for leads sentinel - n8n.",
+    "duration": 300,
+    "creator": 2,
+    "created_at": "2025-12-25T14:39:33.424Z",
+    "updated_at": "2025-12-25T14:39:33.424Z",
+    "resources": []
+  }
+},
+{
+  "model": "skills.pause",
+  "pk": 1,
+  "fields": {
+    "skill": 1,
+    "time": 5,
+    "title": "copy me",
+    "attachment": null,
+    "clipboard": "{'message': 'YES, MADAFAKAAA'}"
+  }
+},
+{
+  "model": "skills.tree",
+  "pk": 1,
+  "fields": {
+    "title": "Leads Sentinel with n8n",
+    "description": "Build a leads monitoring system using n8n, Telegram, Airtable, Apify, and AI.",
+    "intro_video_url": "",
+    "goal_skill": 20,
+    "resources_zip": "",
+    "is_free": true,
+    "created_at": "2025-12-25T14:39:33.425Z",
+    "updated_at": "2025-12-25T14:39:33.425Z"
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 1,
+  "fields": {
+    "tree": 1,
+    "skill": 1
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 2,
+  "fields": {
+    "tree": 1,
+    "skill": 2
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 3,
+  "fields": {
+    "tree": 1,
+    "skill": 3
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 4,
+  "fields": {
+    "tree": 1,
+    "skill": 4
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 5,
+  "fields": {
+    "tree": 1,
+    "skill": 5
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 6,
+  "fields": {
+    "tree": 1,
+    "skill": 4
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 7,
+  "fields": {
+    "tree": 1,
+    "skill": 6
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 8,
+  "fields": {
+    "tree": 1,
+    "skill": 7
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 9,
+  "fields": {
+    "tree": 1,
+    "skill": 8
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 10,
+  "fields": {
+    "tree": 1,
+    "skill": 9
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 11,
+  "fields": {
+    "tree": 1,
+    "skill": 10
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 12,
+  "fields": {
+    "tree": 1,
+    "skill": 4
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 13,
+  "fields": {
+    "tree": 1,
+    "skill": 6
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 14,
+  "fields": {
+    "tree": 1,
+    "skill": 11
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 15,
+  "fields": {
+    "tree": 1,
+    "skill": 12
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 16,
+  "fields": {
+    "tree": 1,
+    "skill": 1
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 17,
+  "fields": {
+    "tree": 1,
+    "skill": 13
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 18,
+  "fields": {
+    "tree": 1,
+    "skill": 14
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 19,
+  "fields": {
+    "tree": 1,
+    "skill": 4
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 20,
+  "fields": {
+    "tree": 1,
+    "skill": 1
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 21,
+  "fields": {
+    "tree": 1,
+    "skill": 15
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 22,
+  "fields": {
+    "tree": 1,
+    "skill": 16
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 23,
+  "fields": {
+    "tree": 1,
+    "skill": 17
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 24,
+  "fields": {
+    "tree": 1,
+    "skill": 18
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 25,
+  "fields": {
+    "tree": 1,
+    "skill": 19
+  }
+},
+{
+  "model": "skills.node",
+  "pk": 26,
+  "fields": {
+    "tree": 1,
+    "skill": 20
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 1,
+  "fields": {
+    "from_node": 1,
+    "to_node": 2,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 2,
+  "fields": {
+    "from_node": 2,
+    "to_node": 3,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 3,
+  "fields": {
+    "from_node": 3,
+    "to_node": 5,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 4,
+  "fields": {
+    "from_node": 4,
+    "to_node": 5,
+    "optional": false,
+    "priority": 1
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 5,
+  "fields": {
+    "from_node": 5,
+    "to_node": 26,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 6,
+  "fields": {
+    "from_node": 6,
+    "to_node": 9,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 7,
+  "fields": {
+    "from_node": 7,
+    "to_node": 9,
+    "optional": false,
+    "priority": 1
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 8,
+  "fields": {
+    "from_node": 8,
+    "to_node": 9,
+    "optional": false,
+    "priority": 2
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 9,
+  "fields": {
+    "from_node": 9,
+    "to_node": 10,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 10,
+  "fields": {
+    "from_node": 10,
+    "to_node": 11,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 11,
+  "fields": {
+    "from_node": 11,
+    "to_node": 26,
+    "optional": false,
+    "priority": 1
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 12,
+  "fields": {
+    "from_node": 12,
+    "to_node": 14,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 13,
+  "fields": {
+    "from_node": 13,
+    "to_node": 14,
+    "optional": false,
+    "priority": 1
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 14,
+  "fields": {
+    "from_node": 14,
+    "to_node": 15,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 15,
+  "fields": {
+    "from_node": 16,
+    "to_node": 17,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 16,
+  "fields": {
+    "from_node": 15,
+    "to_node": 17,
+    "optional": false,
+    "priority": 1
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 17,
+  "fields": {
+    "from_node": 17,
+    "to_node": 18,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 18,
+  "fields": {
+    "from_node": 18,
+    "to_node": 26,
+    "optional": false,
+    "priority": 2
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 19,
+  "fields": {
+    "from_node": 19,
+    "to_node": 20,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 20,
+  "fields": {
+    "from_node": 20,
+    "to_node": 24,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 21,
+  "fields": {
+    "from_node": 21,
+    "to_node": 22,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 22,
+  "fields": {
+    "from_node": 22,
+    "to_node": 23,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 23,
+  "fields": {
+    "from_node": 23,
+    "to_node": 24,
+    "optional": false,
+    "priority": 1
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 24,
+  "fields": {
+    "from_node": 24,
+    "to_node": 25,
+    "optional": false,
+    "priority": 0
+  }
+},
+{
+  "model": "skills.edge",
+  "pk": 25,
+  "fields": {
+    "from_node": 25,
+    "to_node": 26,
+    "optional": false,
+    "priority": 3
+  }
+},
+{
+  "model": "users.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$9pbzzBq2f0RtJDSJZry2Hb$mCGt63I0adRoWu5uYc+SHX4MBcUvLSw07d+LFl9ZwsU=",
+    "last_login": "2025-12-25T15:09:37.006Z",
+    "is_superuser": true,
+    "username": "jura",
+    "first_name": "",
+    "last_name": "",
+    "email": "jura@hey.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-12-25T14:34:12.399Z",
+    "is_subscribed": false,
+    "subscription_expires": null,
+    "stripe_customer_id": "",
+    "last_node": null,
+    "last_video_position": 0,
+    "groups": [],
+    "user_permissions": [],
+    "completed_skills": [],
+    "ignored_skills": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$X24FWetpqgvM60W5XluUBP$PSTMQsp+b6DrlK42PWXIkgxttePw1YbgfYz/xLK2Vw4=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@example.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2025-12-25T14:39:33.255Z",
+    "is_subscribed": false,
+    "subscription_expires": null,
+    "stripe_customer_id": "",
+    "last_node": null,
+    "last_video_position": 0,
+    "groups": [],
+    "user_permissions": [],
+    "completed_skills": [],
+    "ignored_skills": []
+  }
+}
+]
