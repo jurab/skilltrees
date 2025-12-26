@@ -390,7 +390,7 @@
     "is_free": true,
     "preview_type": "strudel",
     "preview_config": {
-      "pattern": "stack(sound(\"bd sd:2 bd sd:1\"),sound(\"hh*8\").gain(0.5),sound(\"sawtooth\").note(\"<c2 eb2 g2 bb2>\").lpf(800).room(0.3))"
+      "pattern": "let lpf = slider(1200, 200, 1200)\n\n$: note(\"<[c2 c3]*4 [bb1 bb2]*4 [f2 f3]*4 [eb2 eb3]*4>\")\n.sound(\"gm_synth_bass_1\").lpf(lpf)\n\n$: n(`<\n[~ 0] 2 [0 2] [~ 2]\n[~ 0] 1 [0 1] [~ 1]\n[~ 0] 3 [0 3] [~ 3]\n[~ 0] 2 [0 2] [~ 2]\n>*4`).scale(\"C4:minor\").lpf(lpf)\n.sound(\"gm_synth_strings_1\")\n._punchcard()\n\n$: sound(\"bd*4, [~ <sd cp>]*2, [~ hh]*4\")\n.bank(\"RolandTR909\").lpf(lpf)"
     },
     "created_at": "2025-12-26T12:00:00Z",
     "updated_at": "2025-12-26T12:00:00Z"

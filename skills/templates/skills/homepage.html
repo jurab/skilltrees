@@ -263,118 +263,15 @@
             border-color: var(--color-action);
         }
 
-        /* Strudel preview */
+        /* Strudel preview - using strudel-editor component */
         .strudel-preview {
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
         }
 
-        .strudel-editor {
-            flex: 1;
-            padding: 15px;
-            background: var(--bg-base);
-            display: flex;
-        }
-
-        .strudel-textarea {
-            flex: 1;
-            background: transparent;
-            border: 1px solid var(--border-default);
-            color: var(--color-action);
-            font-family: 'courier new', monospace;
-            font-size: 12px;
-            line-height: 1.5;
-            padding: 12px;
-            resize: none;
-            outline: none;
-        }
-
-        .strudel-textarea:focus {
-            border-color: var(--color-action);
-        }
-
-        .strudel-textarea::placeholder {
-            color: var(--text-muted);
-        }
-
-        .strudel-controls {
-            padding: 15px 20px;
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .strudel-play {
-            width: 40px;
-            height: 40px;
-            background: transparent;
-            border: 1px solid var(--color-action);
-            color: var(--color-action);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-
-        .strudel-play:hover {
-            background: var(--color-action);
-            color: var(--bg-base);
-        }
-
-        .strudel-play.playing {
-            background: var(--color-action);
-            color: var(--bg-base);
-        }
-
-        .lpf-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .lpf-label {
-            color: var(--text-secondary);
-            font-size: 11px;
-            min-width: 30px;
-        }
-
-        .lpf-slider {
-            flex: 1;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 4px;
-            background: var(--border-default);
-            outline: none;
-            cursor: pointer;
-        }
-
-        .lpf-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            background: var(--color-action);
-            cursor: pointer;
-        }
-
-        .lpf-slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            background: var(--color-action);
-            cursor: pointer;
-            border: none;
-        }
-
-        .lpf-value {
-            color: var(--text-primary);
-            font-size: 11px;
-            min-width: 50px;
-            text-align: right;
+        .strudel-preview strudel-editor {
+            width: 100%;
+            height: 100%;
         }
 
         /* LinkedIn AI Dashboard */
@@ -694,17 +591,11 @@
                 <div class="preview-container" data-preview-type="{{ tree.preview_type }}">
                     {% if tree.preview_type == 'strudel' %}
                     <div class="strudel-preview">
-                        <div class="strudel-editor">
-                            <textarea class="strudel-textarea" spellcheck="false" placeholder="// type your pattern here...">{{ tree.preview_config.pattern }}</textarea>
-                        </div>
-                        <div class="strudel-controls">
-                            <button class="strudel-play" title="Play/Stop (Ctrl+Enter)">&#9654;</button>
-                            <div class="lpf-container">
-                                <span class="lpf-label">LPF</span>
-                                <input type="range" class="lpf-slider" min="100" max="5000" value="800">
-                                <span class="lpf-value">800 Hz</span>
-                            </div>
-                        </div>
+                        <strudel-editor>
+<!--
+{{ tree.preview_config.pattern }}
+-->
+                        </strudel-editor>
                     </div>
                     {% else %}
                     <div class="linkedin-preview">
@@ -763,7 +654,7 @@
         {% endfor %}
     </div>
 
-    <script src="https://unpkg.com/@strudel/web@1.0.3"></script>
+    <script src="https://unpkg.com/@strudel/repl@latest"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Theme definitions
@@ -1198,88 +1089,6 @@
                         addLogLine({ text: 'initializing lead sentinel...', type: 'highlight' });
                     }, 500);
                 }, 25000);
-            });
-
-            // Strudel audio integration
-            // Initialize Strudel globally
-            if (typeof initStrudel === 'function') {
-                initStrudel();
-            }
-            
-            var strudelPreviews = document.querySelectorAll('.strudel-preview');
-            
-            strudelPreviews.forEach(function(preview) {
-                var playBtn = preview.querySelector('.strudel-play');
-                var lpfSlider = preview.querySelector('.lpf-slider');
-                var lpfValue = preview.querySelector('.lpf-value');
-                var textarea = preview.querySelector('.strudel-textarea');
-                var isPlaying = false;
-
-                function getCurrentPattern() {
-                    var code = textarea.value;
-                    var lpfVal = lpfSlider.value;
-                    // Replace existing lpf or append it
-                    if (code.match(/\.lpf\(\d+\)/)) {
-                        return code.replace(/\.lpf\(\d+\)/, '.lpf(' + lpfVal + ')');
-                    } else {
-                        return code + '.lpf(' + lpfVal + ')';
-                    }
-                }
-
-                function playPattern() {
-                    if (typeof sound === 'undefined') {
-                        console.log('Strudel not loaded yet');
-                        return;
-                    }
-
-                    try {
-                        hush();
-                        eval(getCurrentPattern() + '.play()');
-                        isPlaying = true;
-                        playBtn.innerHTML = '&#9632;';
-                        playBtn.classList.add('playing');
-                    } catch(e) {
-                        console.log('Strudel error:', e);
-                    }
-                }
-
-                function stopPattern() {
-                    hush();
-                    isPlaying = false;
-                    playBtn.innerHTML = '&#9654;';
-                    playBtn.classList.remove('playing');
-                }
-
-                lpfSlider.addEventListener('input', function() {
-                    lpfValue.textContent = this.value + ' Hz';
-                    // If playing, restart with new LPF value
-                    if (isPlaying) {
-                        playPattern();
-                    }
-                });
-
-                playBtn.addEventListener('click', function() {
-                    if (!isPlaying) {
-                        playPattern();
-                    } else {
-                        stopPattern();
-                    }
-                });
-
-                // Ctrl+Enter to play
-                textarea.addEventListener('keydown', function(e) {
-                    if (e.ctrlKey && e.key === 'Enter') {
-                        e.preventDefault();
-                        if (isPlaying) {
-                            stopPattern();
-                        }
-                        playPattern();
-                    }
-                    // Escape to stop
-                    if (e.key === 'Escape') {
-                        stopPattern();
-                    }
-                });
             });
 
             updateNav();
