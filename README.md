@@ -82,10 +82,12 @@ python manage.py loaddata skills/fixtures/initial_data.json
 python manage.py runserver
 ```
 
-## Sample Courses
+## Sample Courses (Placeholders)
 
 1. **Leads Sentinel with n8n** - Build an AI-powered LinkedIn lead qualification system
 2. **Strudel.cc Basics** - Learn live-coding music in your browser
+
+*These are placeholder courses demonstrating the platform's capabilities. Real course content coming soon.*
 
 ## Screenshots
 
