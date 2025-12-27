@@ -2,7 +2,7 @@
 
 A visual learning platform with interactive skill trees, progress tracking, and engaging course previews.
 
-**Live:** [comamkurvadelat.cz](https://comamkurvadelat.cz)
+**Live:** [skilltrees-production.up.railway.app](https://skilltrees-production.up.railway.app)
 
 ## Features
 
